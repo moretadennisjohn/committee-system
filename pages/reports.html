@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - SK Committee System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<div class="flex h-screen overflow-hidden">
+    <div class="bg-blue-900 text-white w-64 flex-shrink-0 flex flex-col">
+        <div class="p-5 border-b border-blue-800">
+            <h1 class="text-lg font-bold">SK Committee</h1>
+            <p class="text-blue-300 text-xs mt-1">Management System</p>
+        </div>
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+            <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Dashboard</a>
+            <a href="members.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Members</a>
+            <a href="committees.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Committees</a>
+            <a href="assignments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Assignments</a>
+            <a href="jurisdiction.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Jurisdiction</a>
+            <a href="workload.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Workload</a>
+            <a href="performance.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Performance</a>
+            <a href="reports.html" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-700 text-white text-sm font-medium">Reports</a>
+        </nav>
+        <div class="p-4 border-t border-blue-800">
+            <button onclick="logout()" class="w-full text-left px-3 py-2 text-blue-300 hover:text-white text-sm rounded">Logout</button>
+        </div>
+    </div>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="bg-white shadow-sm px-6 py-4">
+            <h2 class="text-xl font-bold text-gray-800">Reports</h2>
+            <p class="text-gray-500 text-sm">Generate and export system reports</p>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6">
+
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <h3 class="font-bold text-gray-800 mb-4">Generate New Report</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Report Type</label>
+                        <select id="reportType" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                            <option value="">Select report type...</option>
+                            <option value="committee">Committee Report</option>
+                            <option value="member">Member Report</option>
+                            <option value="performance">Performance Report</option>
+                            <option value="workload">Workload Report</option>
+                            <option value="full">Full System Report</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Committee (Optional)</label>
+                        <select id="reportCommittee" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                            <option value="">All Committees</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Date From</label>
+                        <input type="date" id="dateFrom" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Date To</label>
+                        <input type="date" id="dateTo" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="generateReport()" class="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+                        Generate Report
+                    </button>
+                    <button onclick="generateAIReport()" id="aiReportBtn" class="bg-purple-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-purple-700">
+                        Generate AI Summary Report
+                    </button>
+                </div>
+            </div>
+
+            <div id="reportPreview" class="hidden bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-gray-800" id="reportTitle">Report Preview</h3>
+                    <div class="flex gap-2">
+                        <button onclick="printReport()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm">Print</button>
+                        <button onclick="exportCSV()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm">Export CSV</button>
+                    </div>
+                </div>
+                <div id="reportContent"></div>
+            </div>
+
+            <div id="aiReportPanel" class="hidden bg-gradient-to-r from-purple-700 to-blue-700 rounded-xl p-6 mb-6 text-white">
+                <div class="flex items-center gap-3 mb-4">
+                    <div>
+                        <h3 class="font-bold">AI-Generated System Report</h3>
+                        <p class="text-purple-200 text-sm">Gemini AI comprehensive analysis</p>
+                    </div>
+                    <button onclick="printAIReport()" class="ml-auto bg-white text-purple-700 px-3 py-1.5 rounded-lg text-xs font-bold">Print</button>
+                </div>
+                <div id="aiReportContent" class="bg-white bg-opacity-15 rounded-lg p-4 text-sm" style="white-space:pre-wrap;"></div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b flex justify-between items-center">
+                    <h3 class="font-bold text-gray-800">Report History</h3>
+                    <button onclick="sendToSession()" style="background:#00b894; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; font-size:13px;">
+                        📤 Send Performance to Session Management
+                    </button>
+                </div>
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b">
+                        <tr>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Title</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Type</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Date Range</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Generated</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportsTable">
+                        <tr><td colspan="5" class="text-center py-8 text-gray-400">No reports generated yet</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var BACKEND = 'http://localhost/committee-management/backend/api';
+var GEMINI_KEY = 'AQ.Ab8RN6KqzYPMg3v3RoiqwyNtdBYRrbhCKBNWlrYwAnAhC_hSpw';
+var allMembers = [];
+var allCommittees = [];
+var allTasks = [];
+var allAssignments = [];
+var currentReportData = null;
+
+function logout() {
+    localStorage.removeItem('user');
+    window.location.href = 'login.html';
+}
+
+function fetchJSON(url) {
+    return fetch(url)
+        .then(function(res) { return res.text(); })
+        .then(function(text) {
+            try { return JSON.parse(text); }
+            catch(e) {
+                var s = text.indexOf('[');
+                if (s !== -1) { try { return JSON.parse(text.substring(s)); } catch(e2) {} }
+                return [];
+            }
+        })
+        .catch(function() { return []; });
+}
+
+function loadData() {
+    Promise.all([
+        fetchJSON(BACKEND + '/members/index.php'),
+        fetchJSON(BACKEND + '/committees/index.php'),
+        fetchJSON(BACKEND + '/tasks/index.php'),
+        fetchJSON(BACKEND + '/assignments/index.php'),
+        fetchJSON(BACKEND + '/reports/index.php')
+    ]).then(function(results) {
+        allMembers     = Array.isArray(results[0]) ? results[0] : [];
+        allCommittees  = Array.isArray(results[1]) ? results[1] : [];
+        allTasks       = Array.isArray(results[2]) ? results[2] : [];
+        allAssignments = Array.isArray(results[3]) ? results[3] : [];
+        var reports    = Array.isArray(results[4]) ? results[4] : [];
+
+        var committeeOpts = '<option value="">All Committees</option>';
+        for (var i = 0; i < allCommittees.length; i++) {
+            committeeOpts += '<option value="' + allCommittees[i].id + '">' + allCommittees[i].name + '</option>';
+        }
+        document.getElementById('reportCommittee').innerHTML = committeeOpts;
+
+        renderReports(reports);
+
+        var today    = new Date().toISOString().slice(0, 10);
+        var monthAgo = new Date(Date.now() - 30*24*60*60*1000).toISOString().slice(0, 10);
+        document.getElementById('dateFrom').value = monthAgo;
+        document.getElementById('dateTo').value   = today;
+    });
+}
+
+function renderReports(reports) {
+    if (!reports.length) {
+        document.getElementById('reportsTable').innerHTML =
+            '<tr><td colspan="5" class="text-center py-8 text-gray-400">No reports generated yet</td></tr>';
+        return;
+    }
+    var html = '';
+    for (var i = 0; i < reports.length; i++) {
+        var r = reports[i];
+        html += '<tr class="border-b hover:bg-gray-50">';
+        html += '<td class="px-6 py-4 text-sm font-medium text-gray-800">' + (r.title || '-') + '</td>';
+        html += '<td class="px-6 py-4"><span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">' + (r.report_type || '-') + '</span></td>';
+        html += '<td class="px-6 py-4 text-sm text-gray-500">' + (r.date_from || '-') + ' to ' + (r.date_to || '-') + '</td>';
+        html += '<td class="px-6 py-4 text-sm text-gray-500">' + (r.created_at ? new Date(r.created_at).toLocaleDateString('en-PH') : '-') + '</td>';
+        html += '<td class="px-6 py-4">';
+        html += '<button onclick="exportToArchives(\'' + r.id + '\')" style="background:#6c5ce7; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:12px;">📁 Archive</button>';
+        html += '</td>';
+        html += '</tr>';
+    }
+    document.getElementById('reportsTable').innerHTML = html;
+}
+
+function generateReport() {
+    var type = document.getElementById('reportType').value;
+    if (!type) { alert('Please select a report type!'); return; }
+
+    var committeeId = document.getElementById('reportCommittee').value;
+    var dateFrom    = document.getElementById('dateFrom').value;
+    var dateTo      = document.getElementById('dateTo').value;
+    var headers = [], rows = [], title = '';
+
+    if (type === 'committee') {
+        title = 'Committee Report';
+        headers = ['Name', 'Type', 'Purpose', 'Status', 'Created'];
+        var committees = committeeId
+            ? allCommittees.filter(function(c) { return c.id === committeeId; })
+            : allCommittees;
+        for (var i = 0; i < committees.length; i++) {
+            var c = committees[i];
+            rows.push([c.name, c.type || '-', c.purpose || '-', c.status,
+                new Date(c.created_at).toLocaleDateString('en-PH')]);
+        }
+    } else if (type === 'member') {
+        title = 'Member Report';
+        headers = ['Name', 'Position', 'Email', 'Availability', 'Workload'];
+        for (var j = 0; j < allMembers.length; j++) {
+            var m = allMembers[j];
+            var taskCount = allTasks.filter(function(t) {
+                return t.member_id === m.id && t.status === 'pending';
+            }).length;
+            rows.push([m.full_name, m.position || '-', m.email || '-', m.availability, taskCount + '/5 tasks']);
+        }
+    } else if (type === 'performance') {
+        title = 'Performance Report';
+        headers = ['Member', 'Position', 'Total Tasks', 'Completed', 'Rate', 'Grade'];
+        for (var p = 0; p < allMembers.length; p++) {
+            var pm = allMembers[p];
+            var mTasks     = allTasks.filter(function(t) { return t.member_id === pm.id; });
+            var completed  = mTasks.filter(function(t) { return t.status === 'completed'; });
+            var rate       = mTasks.length > 0 ? Math.round((completed.length / mTasks.length) * 100) : 0;
+            var grade      = rate >= 90 ? 'Excellent' : rate >= 75 ? 'Good' : rate >= 60 ? 'Average' : 'Needs Improvement';
+            rows.push([pm.full_name, pm.position || '-', mTasks.length, completed.length, rate + '%', grade]);
+        }
+    } else if (type === 'workload') {
+        title = 'Workload Distribution Report';
+        headers = ['Member', 'Position', 'Pending', 'Completed', 'Status'];
+        for (var w = 0; w < allMembers.length; w++) {
+            var wm      = allMembers[w];
+            var pending = allTasks.filter(function(t) { return t.member_id === wm.id && t.status === 'pending'; }).length;
+            var done    = allTasks.filter(function(t) { return t.member_id === wm.id && t.status === 'completed'; }).length;
+            var wstatus = pending > 5 ? 'Overloaded' : pending < 2 ? 'Underloaded' : 'Balanced';
+            rows.push([wm.full_name, wm.position || '-', pending, done, wstatus]);
+        }
+    } else if (type === 'full') {
+        title = 'Full System Report';
+        headers = ['Category', 'Details', 'Count'];
+        var pendingTasks   = allTasks.filter(function(t) { return t.status === 'pending'; }).length;
+        var completedTasks = allTasks.filter(function(t) { return t.status === 'completed'; }).length;
+        var availableMembers = allMembers.filter(function(m) { return m.availability === 'available'; }).length;
+        rows = [
+            ['Total Committees',  'Active SK Committees',   allCommittees.length],
+            ['Total Members',     'Registered SK Members',  allMembers.length],
+            ['Total Tasks',       'All Tasks',              allTasks.length],
+            ['Pending Tasks',     'Not Yet Completed',      pendingTasks],
+            ['Completed Tasks',   'Finished Tasks',         completedTasks],
+            ['Total Assignments', 'Member-Committee',       allAssignments.length],
+            ['Available Members', 'Ready for Assignment',   availableMembers]
+        ];
+    }
+
+    currentReportData = { headers: headers, rows: rows, title: title };
+    document.getElementById('reportPreview').classList.remove('hidden');
+    document.getElementById('reportTitle').textContent = title;
+
+    var tableHtml = '<div class="text-sm text-gray-500 mb-3">Generated: ' + new Date().toLocaleDateString('en-PH', {dateStyle:'full'}) + '</div>';
+    tableHtml += '<div class="overflow-x-auto"><table class="w-full border-collapse border border-gray-300">';
+    tableHtml += '<thead><tr class="bg-blue-900 text-white">';
+    for (var h = 0; h < headers.length; h++) {
+        tableHtml += '<th class="border border-gray-300 px-4 py-2 text-left text-sm">' + headers[h] + '</th>';
+    }
+    tableHtml += '</tr></thead><tbody>';
+    for (var ri = 0; ri < rows.length; ri++) {
+        tableHtml += '<tr class="' + (ri % 2 === 0 ? 'bg-white' : 'bg-gray-50') + '">';
+        for (var ci = 0; ci < rows[ri].length; ci++) {
+            tableHtml += '<td class="border border-gray-300 px-4 py-2 text-sm">' + rows[ri][ci] + '</td>';
+        }
+        tableHtml += '</tr>';
+    }
+    tableHtml += '</tbody></table></div>';
+    tableHtml += '<p class="text-xs text-gray-400 mt-3">Total Records: ' + rows.length + '</p>';
+    document.getElementById('reportContent').innerHTML = tableHtml;
+
+    fetch(BACKEND + '/reports/index.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            title:       title,
+            report_type: type,
+            date_from:   dateFrom || null,
+            date_to:     dateTo   || null
+        })
+    }).then(function() { loadData(); });
+}
+
+function generateAIReport() {
+    var btn = document.getElementById('aiReportBtn');
+    btn.textContent = 'Generating...';
+    btn.disabled = true;
+
+    var pendingTasks   = allTasks.filter(function(t) { return t.status === 'pending'; }).length;
+    var completedTasks = allTasks.filter(function(t) { return t.status === 'completed'; }).length;
+
+    var committeesStr = '';
+    for (var i = 0; i < allCommittees.length; i++) {
+        committeesStr += '- ' + allCommittees[i].name + ' (' + (allCommittees[i].type || 'General') + ') - ' + allCommittees[i].status + '\n';
+    }
+    var membersStr = '';
+    for (var j = 0; j < allMembers.length; j++) {
+        var m      = allMembers[j];
+        var mTasks = allTasks.filter(function(t) { return t.member_id === m.id; });
+        var mDone  = mTasks.filter(function(t) { return t.status === 'completed'; }).length;
+        membersStr += '- ' + m.full_name + ' (' + (m.position || 'Member') + '): ' + mTasks.length + ' total, ' + mDone + ' completed\n';
+    }
+
+    var prompt = 'You are a report generator for SK Committee Management System in the Philippines.\n\nData:\n- Committees: ' + allCommittees.length + '\n- Members: ' + allMembers.length + '\n- Tasks: ' + allTasks.length + '\n- Pending: ' + pendingTasks + '\n- Completed: ' + completedTasks + '\n\nCommittees:\n' + committeesStr + '\nMembers:\n' + membersStr + '\nGenerate a comprehensive formal report. Include:\n1. Executive Summary\n2. Committee Status Overview\n3. Member Performance\n4. Workload Analysis\n5. Key Findings\n6. Recommendations\n7. Conclusion\n\nUse formal Filipino-English style.';
+
+    fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + GEMINI_KEY, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({contents: [{parts: [{text: prompt}]}]})
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        var text = data.candidates && data.candidates[0]
+            ? data.candidates[0].content.parts[0].text
+            : 'Unable to generate report';
+        document.getElementById('aiReportPanel').classList.remove('hidden');
+        document.getElementById('aiReportContent').textContent = text;
+
+        fetch(BACKEND + '/reports/index.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({title: 'AI-Generated System Report', report_type: 'ai_summary', date_from: null, date_to: null})
+        }).then(function() { loadData(); });
+    })
+    .catch(function(e) { alert('AI report failed: ' + e.message); })
+    .finally(function() {
+        btn.textContent = 'Generate AI Summary Report';
+        btn.disabled = false;
+    });
+}
+
+function exportCSV() {
+    if (!currentReportData) { alert('Generate a report first!'); return; }
+    var rows = [currentReportData.headers].concat(currentReportData.rows);
+    var csv  = '';
+    for (var i = 0; i < rows.length; i++) {
+        var row = [];
+        for (var j = 0; j < rows[i].length; j++) { row.push('"' + rows[i][j] + '"'); }
+        csv += row.join(',') + '\n';
+    }
+    var blob = new Blob([csv], {type: 'text/csv'});
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href   = url;
+    a.download = currentReportData.title + '_' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click();
+}
+
+function printReport() {
+    var content = document.getElementById('reportContent').innerHTML;
+    var title   = document.getElementById('reportTitle').textContent;
+    var win     = window.open('', '_blank');
+    win.document.write('<html><head><title>' + title + '</title><style>body{font-family:Arial,sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th{background:#1e3a8a;color:white;padding:8px;text-align:left;}td{border:1px solid #ddd;padding:8px;}tr:nth-child(even){background:#f9f9f9;}</style></head><body><h1>SK Committee Management System</h1><h2>' + title + '</h2>' + content + '</body></html>');
+    win.print();
+}
+
+function printAIReport() {
+    var content = document.getElementById('aiReportContent').textContent;
+    var win     = window.open('', '_blank');
+    win.document.write('<html><head><title>AI Report</title><style>body{font-family:Arial,sans-serif;padding:30px;line-height:1.8;}pre{white-space:pre-wrap;font-family:Arial;}h1{color:#1e3a8a;}</style></head><body><h1>SK Committee Management System</h1><h2>AI-Generated Comprehensive Report</h2><p>Generated: ' + new Date().toLocaleDateString('en-PH', {dateStyle:'full'}) + '</p><hr><pre>' + content + '</pre></body></html>');
+    win.print();
+}
+
+async function exportToArchives(reportId) {
+    try {
+        const res = await fetch('/committee-management/backend/api/reports/export_to_archives.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({report_id: reportId})
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('✅ Exported!\nReference: ' + data.archive_reference);
+        } else {
+            alert('❌ Error: ' + data.message);
+        }
+    } catch(e) {
+        alert('❌ Connection error: ' + e.message);
+    }
+}
+
+async function sendToSession(committeeId = null) {
+    try {
+        const res = await fetch('/committee-management/backend/api/performance/send_to_session.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({committee_id: committeeId})
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('✅ Sent!\nAverage Score: ' + data.analytics_summary.average_score + '%\nMembers: ' + data.analytics_summary.total_members);
+        } else {
+            alert('❌ Error: ' + data.message);
+        }
+    } catch(e) {
+        alert('❌ Connection error: ' + e.message);
+    }
+}
+
+loadData();
+</script>
+</body>
+</html>

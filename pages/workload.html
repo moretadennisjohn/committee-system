@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workload - SK Committee System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<div class="flex h-screen overflow-hidden">
+    <div class="bg-blue-900 text-white w-64 flex-shrink-0 flex flex-col">
+        <div class="p-5 border-b border-blue-800">
+            <h1 class="text-lg font-bold">SK Committee</h1>
+            <p class="text-blue-300 text-xs mt-1">Management System</p>
+        </div>
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+            <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Dashboard</a>
+            <a href="members.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Members</a>
+            <a href="committees.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Committees</a>
+            <a href="assignments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Assignments</a>
+            <a href="jurisdiction.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Jurisdiction</a>
+            <a href="workload.html" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-700 text-white text-sm font-medium">Workload</a>
+            <a href="performance.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Performance</a>
+            <a href="reports.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Reports</a>
+        </nav>
+        <div class="p-4 border-t border-blue-800">
+            <button onclick="logout()" class="w-full text-left px-3 py-2 text-blue-300 hover:text-white text-sm rounded">Logout</button>
+        </div>
+    </div>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">Workload Distribution</h2>
+                <p class="text-gray-500 text-sm">AI-powered automated workload balancing</p>
+            </div>
+            <button onclick="analyzeWorkload()" id="analyzeBtn" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700">
+                Analyze Workload
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6">
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-6">
+                <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-500">
+                    <p class="text-gray-500 text-sm">Total Members</p>
+                    <h3 class="text-3xl font-bold text-gray-800 mt-1" id="statTotal">0</h3>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-green-500">
+                    <p class="text-gray-500 text-sm">Balanced</p>
+                    <h3 class="text-3xl font-bold text-green-600 mt-1" id="statBalanced">0</h3>
+                    <p class="text-xs text-gray-400 mt-1">2-5 tasks</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-red-500">
+                    <p class="text-gray-500 text-sm">Overloaded</p>
+                    <h3 class="text-3xl font-bold text-red-600 mt-1" id="statOverloaded">0</h3>
+                    <p class="text-xs text-gray-400 mt-1">More than 5 tasks</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-yellow-500">
+                    <p class="text-gray-500 text-sm">Underloaded</p>
+                    <h3 class="text-3xl font-bold text-yellow-600 mt-1" id="statUnderloaded">0</h3>
+                    <p class="text-xs text-gray-400 mt-1">Less than 2 tasks</p>
+                </div>
+            </div>
+
+            <div id="aiPanel" class="hidden bg-gradient-to-r from-purple-700 to-blue-700 rounded-xl p-5 mb-6 text-white">
+                <div class="flex items-center gap-3 mb-3">
+                    <h3 class="font-bold">Gemini AI Workload Analysis</h3>
+                    <span id="alertBadge" class="text-xs px-3 py-1 rounded-full font-bold"></span>
+                </div>
+                <p id="aiSummary" class="text-blue-100 text-sm mb-4"></p>
+                <div id="aiRecommendations" class="space-y-2"></div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
+                <h3 class="font-bold text-gray-800 mb-4">Add Task to Member</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <select id="taskMember" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select member...</option>
+                    </select>
+                    <select id="taskCommittee" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select committee...</option>
+                    </select>
+                    <input type="text" id="taskTitle" placeholder="Task title..." class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="date" id="taskDueDate" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <button onclick="addTask()" class="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">Add Task</button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b">
+                    <h3 class="font-bold text-gray-800">Member Workload Overview</h3>
+                </div>
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b">
+                        <tr>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Member</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Tasks</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Workload Bar</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="workloadTable">
+                        <tr><td colspan="5" class="text-center py-8 text-gray-400">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b flex justify-between items-center">
+                    <h3 class="font-bold text-gray-800">All Tasks</h3>
+                    <select id="filterStatus" onchange="filterTasks()" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b">
+                        <tr>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Task</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Assigned To</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Due Date</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tasksTable">
+                        <tr><td colspan="5" class="text-center py-8 text-gray-400">Loading tasks...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var BACKEND = 'http://localhost/committee-management/backend/api';
+var GEMINI_KEY = 'AQ.Ab8RN6KqzYPMg3v3RoiqwyNtdBYRrbhCKBNWlrYwAnAhC_hSpw';
+var allMembers = [];
+var allTasks = [];
+var allCommittees = [];
+
+function logout() {
+    localStorage.removeItem('user');
+    window.location.href = 'login.html';
+}
+
+function fetchJSON(url) {
+    return fetch(url)
+        .then(function(res) { return res.text(); })
+        .then(function(text) {
+            try { return JSON.parse(text); }
+            catch(e) {
+                var s = text.indexOf('[');
+                if (s !== -1) { try { return JSON.parse(text.substring(s)); } catch(e2) {} }
+                return [];
+            }
+        })
+        .catch(function() { return []; });
+}
+
+function loadData() {
+    Promise.all([
+        fetchJSON(BACKEND + '/members/index.php'),
+        fetchJSON(BACKEND + '/tasks/index.php'),
+        fetchJSON(BACKEND + '/committees/index.php')
+    ]).then(function(results) {
+        allMembers = Array.isArray(results[0]) ? results[0] : [];
+        allTasks = Array.isArray(results[1]) ? results[1] : [];
+        allCommittees = Array.isArray(results[2]) ? results[2] : [];
+
+        var memberOpts = '<option value="">Select member...</option>';
+        for (var i = 0; i < allMembers.length; i++) {
+            memberOpts += '<option value="' + allMembers[i].id + '">' + allMembers[i].full_name + ' (' + (allMembers[i].position || 'Member') + ')</option>';
+        }
+        document.getElementById('taskMember').innerHTML = memberOpts;
+
+        var committeeOpts = '<option value="">Select committee...</option>';
+        for (var j = 0; j < allCommittees.length; j++) {
+            committeeOpts += '<option value="' + allCommittees[j].id + '">' + allCommittees[j].name + '</option>';
+        }
+        document.getElementById('taskCommittee').innerHTML = committeeOpts;
+
+        renderWorkload();
+        renderTasks(allTasks);
+        updateStats();
+    });
+}
+
+function updateStats() {
+    var taskCounts = {};
+    for (var i = 0; i < allTasks.length; i++) {
+        if (allTasks[i].status === 'pending' && allTasks[i].member_id) {
+            taskCounts[allTasks[i].member_id] = (taskCounts[allTasks[i].member_id] || 0) + 1;
+        }
+    }
+    var balanced = 0, overloaded = 0, underloaded = 0;
+    for (var j = 0; j < allMembers.length; j++) {
+        var count = taskCounts[allMembers[j].id] || 0;
+        if (count > 5) overloaded++;
+        else if (count < 2) underloaded++;
+        else balanced++;
+    }
+    document.getElementById('statTotal').textContent = allMembers.length;
+    document.getElementById('statBalanced').textContent = balanced;
+    document.getElementById('statOverloaded').textContent = overloaded;
+    document.getElementById('statUnderloaded').textContent = underloaded;
+}
+
+function renderWorkload() {
+    var taskCounts = {};
+    for (var i = 0; i < allTasks.length; i++) {
+        if (allTasks[i].status === 'pending' && allTasks[i].member_id) {
+            taskCounts[allTasks[i].member_id] = (taskCounts[allTasks[i].member_id] || 0) + 1;
+        }
+    }
+    if (!allMembers.length) {
+        document.getElementById('workloadTable').innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-400">No members found</td></tr>';
+        return;
+    }
+    var html = '';
+    for (var j = 0; j < allMembers.length; j++) {
+        var m = allMembers[j];
+        var count = taskCounts[m.id] || 0;
+        var pct = Math.min((count / 5) * 100, 100);
+        var isOver = count > 5;
+        var isUnder = count < 2;
+        var barColor = isOver ? 'bg-red-500' : isUnder ? 'bg-yellow-400' : 'bg-green-500';
+        var status = isOver ? 'Overloaded' : isUnder ? 'Underloaded' : 'Balanced';
+        var statusColor = isOver ? 'bg-red-100 text-red-700' : isUnder ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700';
+
+        html += '<tr class="border-b hover:bg-gray-50">';
+        html += '<td class="px-6 py-4"><div class="flex items-center gap-2">';
+        html += '<div class="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold">' + m.full_name.charAt(0) + '</div>';
+        html += '<div><p class="text-sm font-medium text-gray-800">' + m.full_name + '</p>';
+        html += '<p class="text-xs text-gray-500">' + (m.position || 'Member') + '</p></div></div></td>';
+        html += '<td class="px-6 py-4 text-sm font-bold text-gray-800">' + count + ' / 5</td>';
+        html += '<td class="px-6 py-4"><div class="w-full bg-gray-200 rounded-full h-3"><div class="' + barColor + ' h-3 rounded-full" style="width:' + pct + '%"></div></div>';
+        html += '<p class="text-xs text-gray-400 mt-1">' + Math.round(pct) + '% capacity</p></td>';
+        html += '<td class="px-6 py-4"><span class="text-xs px-2 py-1 rounded-full font-medium ' + statusColor + '">' + status + '</span></td>';
+        html += '<td class="px-6 py-4"><button onclick="viewMemberTasks(\'' + m.id + '\',\'' + m.full_name + '\')" class="text-blue-600 text-xs font-medium px-2 py-1 bg-blue-50 rounded">View Tasks</button></td>';
+        html += '</tr>';
+    }
+    document.getElementById('workloadTable').innerHTML = html;
+}
+
+function renderTasks(tasks) {
+    if (!tasks.length) {
+        document.getElementById('tasksTable').innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-400">No tasks found</td></tr>';
+        return;
+    }
+    var html = '';
+    for (var i = 0; i < tasks.length; i++) {
+        var t = tasks[i];
+        var member = null;
+        for (var j = 0; j < allMembers.length; j++) {
+            if (allMembers[j].id === t.member_id) { member = allMembers[j]; break; }
+        }
+        var isOverdue = t.due_date && new Date(t.due_date) < new Date() && t.status !== 'completed';
+        html += '<tr class="border-b hover:bg-gray-50' + (isOverdue ? ' bg-red-50' : '') + '">';
+        html += '<td class="px-6 py-4"><p class="text-sm font-medium text-gray-800">' + t.title + '</p>';
+        if (isOverdue) html += '<span class="text-xs text-red-500">Overdue</span>';
+        html += '</td>';
+        html += '<td class="px-6 py-4 text-sm text-gray-600">' + (member ? member.full_name : 'Unassigned') + '</td>';
+        html += '<td class="px-6 py-4 text-sm text-gray-500">' + (t.due_date || '-') + '</td>';
+        html += '<td class="px-6 py-4"><span class="text-xs px-2 py-1 rounded-full font-medium ' + (t.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700') + '">' + t.status + '</span></td>';
+        html += '<td class="px-6 py-4"><div class="flex gap-2">';
+        if (t.status !== 'completed') {
+            html += '<button onclick="markComplete(\'' + t.id + '\',\'' + t.title.replace(/'/g, '') + '\')" class="text-green-600 text-xs font-medium px-2 py-1 bg-green-50 rounded">Complete</button>';
+        }
+        html += '<button onclick="deleteTask(\'' + t.id + '\')" class="text-red-600 text-xs font-medium px-2 py-1 bg-red-50 rounded">Delete</button>';
+        html += '</div></td></tr>';
+    }
+    document.getElementById('tasksTable').innerHTML = html;
+}
+
+function filterTasks() {
+    var status = document.getElementById('filterStatus').value;
+    var filtered = status ? allTasks.filter(function(t) { return t.status === status; }) : allTasks;
+    renderTasks(filtered);
+}
+
+function viewMemberTasks(memberId, memberName) {
+    var tasks = allTasks.filter(function(t) { return t.member_id === memberId; });
+    var msg = 'Tasks for ' + memberName + ':\n\n';
+    if (!tasks.length) {
+        msg += 'No tasks assigned';
+    } else {
+        for (var i = 0; i < tasks.length; i++) {
+            msg += '- ' + tasks[i].title + ' (' + tasks[i].status + ')\n';
+        }
+    }
+    alert(msg);
+}
+
+function addTask() {
+    var memberId = document.getElementById('taskMember').value;
+    var committeeId = document.getElementById('taskCommittee').value;
+    var title = document.getElementById('taskTitle').value.trim();
+    var dueDate = document.getElementById('taskDueDate').value;
+
+    if (!memberId) { alert('Please select a member!'); return; }
+    if (!title) { alert('Please enter a task title!'); return; }
+
+    var pending = 0;
+    for (var i = 0; i < allTasks.length; i++) {
+        if (allTasks[i].member_id === memberId && allTasks[i].status === 'pending') pending++;
+    }
+    if (pending >= 5) {
+        alert('This member already has 5 tasks (maximum)! Please assign to another member.');
+        return;
+    }
+
+    fetch(BACKEND + '/tasks/index.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            member_id: memberId,
+            committee_id: committeeId || null,
+            title: title,
+            due_date: dueDate || null,
+            status: 'pending'
+        })
+    }).then(function(res) { return res.text(); })
+    .then(function() {
+        document.getElementById('taskTitle').value = '';
+        document.getElementById('taskDueDate').value = '';
+        alert('Task added successfully!');
+        loadData();
+    });
+}
+
+function markComplete(id, title) {
+    fetch(BACKEND + '/tasks/index.php', {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({id: id, status: 'completed', title: title})
+    }).then(function() { loadData(); });
+}
+
+function deleteTask(id) {
+    if (!confirm('Delete this task?')) return;
+    fetch(BACKEND + '/tasks/index.php', {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({id: id})
+    }).then(function() { loadData(); });
+}
+
+function analyzeWorkload() {
+    var btn = document.getElementById('analyzeBtn');
+    btn.textContent = 'Analyzing...';
+    btn.disabled = true;
+
+    var taskCounts = {};
+    for (var i = 0; i < allTasks.length; i++) {
+        if (allTasks[i].status === 'pending' && allTasks[i].member_id) {
+            taskCounts[allTasks[i].member_id] = (taskCounts[allTasks[i].member_id] || 0) + 1;
+        }
+    }
+
+    var overloaded = [], underloaded = [], balanced = [];
+    for (var j = 0; j < allMembers.length; j++) {
+        var m = allMembers[j];
+        var count = taskCounts[m.id] || 0;
+        m.task_count = count;
+        if (count > 5) overloaded.push(m);
+        else if (count < 2) underloaded.push(m);
+        else balanced.push(m);
+    }
+
+    var overStr = overloaded.length ? overloaded.map(function(m) { return m.full_name + ': ' + m.task_count + ' tasks'; }).join(', ') : 'None';
+    var underStr = underloaded.length ? underloaded.map(function(m) { return m.full_name + ': ' + m.task_count + ' tasks'; }).join(', ') : 'None';
+    var balStr = balanced.length ? balanced.map(function(m) { return m.full_name + ': ' + m.task_count + ' tasks'; }).join(', ') : 'None';
+
+    var prompt = 'You are an AI workload analyst for SK Committee System Philippines.\n\nOverloaded members (5+ tasks): ' + overStr + '\nUnderloaded members (less than 2 tasks): ' + underStr + '\nBalanced members (2-5 tasks): ' + balStr + '\n\nAnalyze and respond ONLY in JSON (no markdown):\n{"status":"balanced or needs_rebalancing","overloaded_count":0,"underloaded_count":0,"recommendations":[{"action":"redistribute","from_member":"name","to_member":"name","reason":"brief reason"}],"summary":"brief analysis","alert_level":"green or yellow or red"}';
+
+    fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + GEMINI_KEY, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({contents: [{parts: [{text: prompt}]}]})
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        var text = data.candidates && data.candidates[0] ? data.candidates[0].content.parts[0].text : '';
+        text = text.replace(/```json\n?|\n?```/g, '').trim();
+        var jsonStart = text.indexOf('{');
+        var jsonEnd = text.lastIndexOf('}');
+        var ai = JSON.parse(text.substring(jsonStart, jsonEnd + 1));
+
+        var panel = document.getElementById('aiPanel');
+        panel.classList.remove('hidden');
+
+        var badge = document.getElementById('alertBadge');
+        badge.textContent = ai.alert_level === 'red' ? 'Critical' : ai.alert_level === 'yellow' ? 'Warning' : 'Good';
+        badge.className = 'text-xs px-3 py-1 rounded-full font-bold ' + (ai.alert_level === 'red' ? 'bg-red-500' : ai.alert_level === 'yellow' ? 'bg-yellow-400 text-yellow-900' : 'bg-green-500');
+
+        document.getElementById('aiSummary').textContent = ai.summary || '';
+
+        var recs = ai.recommendations || [];
+        var html = '';
+        for (var i = 0; i < recs.length; i++) {
+            var r = recs[i];
+            html += '<div class="bg-white bg-opacity-20 rounded-lg p-3 flex items-start gap-3">';
+            html += '<div><p class="text-sm font-medium">Move task: ' + r.from_member + ' to ' + r.to_member + '</p>';
+            html += '<p class="text-blue-200 text-xs mt-0.5">' + r.reason + '</p></div></div>';
+        }
+        document.getElementById('aiRecommendations').innerHTML = html || '<p class="text-blue-100 text-sm">No redistribution needed.</p>';
+    })
+    .catch(function(e) {
+        document.getElementById('aiPanel').classList.remove('hidden');
+        document.getElementById('aiSummary').textContent = 'AI analysis failed: ' + e.message;
+    })
+    .finally(function() {
+        btn.textContent = 'Analyze Workload';
+        btn.disabled = false;
+    });
+}
+
+loadData();
+</script>
+</body>
+</html>

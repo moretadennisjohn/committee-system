@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Committees - SK Committee System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<div class="flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <div class="bg-blue-900 text-white w-64 flex-shrink-0 flex flex-col">
+        <div class="p-5 border-b border-blue-800">
+            <h1 class="text-lg font-bold">SK Committee</h1>
+            <p class="text-blue-300 text-xs mt-1">Management System</p>
+        </div>
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+            <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">📊 Dashboard</a>
+            <a href="members.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">👥 Members</a>
+            <a href="committees.html" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-700 text-white text-sm font-medium">🏛️ Committees</a>
+            <a href="assignments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">📋 Assignments</a>
+            <a href="jurisdiction.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">🗺️ Jurisdiction</a>
+            <a href="workload.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">⚖️ Workload</a>
+            <a href="performance.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">📈 Performance</a>
+            <a href="reports.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">📄 Reports</a>
+        </nav>
+        <div class="p-4 border-t border-blue-800">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="bg-blue-600 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">A</div>
+                <div>
+                    <p class="text-sm font-medium">Admin</p>
+                    <p class="text-xs text-blue-300">admin@sk.gov</p>
+                </div>
+            </div>
+            <button onclick="logout()" class="w-full text-left px-3 py-2 text-blue-300 hover:text-white text-sm rounded hover:bg-blue-800">🚪 Logout</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">Committees</h2>
+                <p class="text-gray-500 text-sm">Manage all SK committees</p>
+            </div>
+            <button onclick="openAddModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">+ New Committee</button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6">
+            <!-- Search -->
+            <div class="bg-white rounded-xl shadow-sm p-4 mb-5">
+                <input type="text" id="searchInput" onkeyup="filterCommittees()" placeholder="Search committees..." class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- Committees Grid -->
+            <div id="committeesGrid" class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="col-span-3 text-center py-8 text-gray-400">Loading committees...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div id="committeeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md mx-4">
+        <h3 class="text-lg font-bold text-gray-800 mb-4" id="modalTitle">New Committee</h3>
+        <input type="hidden" id="committeeId">
+        <div class="space-y-3">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Committee Name *</label>
+                <input type="text" id="committeeName" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter committee name">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                <select id="committeeType" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Select type</option>
+                    <option value="Education">Education</option>
+                    <option value="Health">Health</option>
+                    <option value="Environment">Environment</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Livelihood">Livelihood</option>
+                    <option value="Peace and Order">Peace and Order</option>
+                    <option value="Culture and Arts">Culture and Arts</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Purpose</label>
+                <textarea id="committeePurpose" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Describe the committee's purpose"></textarea>
+            </div>
+            <div>
+    <label class="block text-sm font-medium text-gray-700 mb-1">Mandate</label>
+    <textarea id="committeeMandate" rows="2"
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholder="Committee mandate and authority"></textarea>
+</div>
+<div>
+    <label class="block text-sm font-medium text-gray-700 mb-1">Qualification Requirements</label>
+    <textarea id="committeeQualifications" rows="2"
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholder="Required qualifications for committee members"></textarea>
+</div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <select id="committeeStatus" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="dissolved">Dissolved</option>
+                </select>
+            </div>
+        </div>
+        <div class="flex gap-3 mt-5">
+            <button onclick="saveCommittee()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700">Save Committee</button>
+            <button onclick="closeModal()" class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg text-sm font-medium hover:bg-gray-200">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm mx-4 text-center">
+        <div class="text-5xl mb-3">⚠️</div>
+        <h3 class="text-lg font-bold text-gray-800 mb-2">Delete Committee?</h3>
+        <p class="text-gray-500 text-sm mb-5">This action cannot be undone.</p>
+        <input type="hidden" id="deleteId">
+        <div class="flex gap-3">
+            <button onclick="confirmDelete()" class="flex-1 bg-red-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-red-700">Delete</button>
+            <button onclick="document.getElementById('deleteModal').classList.add('hidden')" class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg text-sm font-medium">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const BACKEND = 'http://localhost/committee-management/backend/api';
+let allCommittees = [];
+
+function logout() {
+    localStorage.removeItem('user');
+    window.location.href = 'login.html';
+}
+
+async function loadCommittees() {
+    try {
+        const res = await fetch(BACKEND + '/committees/index.php');
+        allCommittees = await res.json();
+        renderCommittees(allCommittees);
+    } catch(e) {
+        document.getElementById('committeesGrid').innerHTML = '<div class="col-span-3 text-center py-8 text-red-400">Error loading committees</div>';
+    }
+}
+
+function renderCommittees(committees) {
+    if (!Array.isArray(committees) || committees.length === 0) {
+        document.getElementById('committeesGrid').innerHTML = '<div class="col-span-3 text-center py-8 text-gray-400">No committees found. Create your first committee!</div>';
+        return;
+    }
+    document.getElementById('committeesGrid').innerHTML = committees.map(c => `
+        <div class="bg-white rounded-xl shadow-sm p-5 border-t-4 ${
+            c.status === 'active' ? 'border-green-500' :
+            c.status === 'inactive' ? 'border-yellow-500' : 'border-red-500'
+        }">
+            <div class="flex justify-between items-start mb-3">
+                <div>
+                    <h3 class="font-bold text-gray-800">${c.name}</h3>
+                    <span class="text-xs text-gray-500">${c.type || 'General'}</span>
+                </div>
+                <span class="text-xs px-2 py-1 rounded-full font-medium ${
+                    c.status === 'active' ? 'bg-green-100 text-green-700' :
+                    c.status === 'inactive' ? 'bg-yellow-100 text-yellow-700' :
+                    'bg-red-100 text-red-700'
+                }">${c.status}</span>
+            </div>
+            <p class="text-sm text-gray-500 mb-4 line-clamp-2">${c.purpose || 'No purpose defined'}</p>
+            <div class="text-xs text-gray-400 mb-4">Created: ${new Date(c.created_at).toLocaleDateString('en-PH')}</div>
+            <div class="flex gap-2">
+                <button onclick="editCommittee('${c.id}')" class="flex-1 text-blue-600 text-xs font-medium py-1.5 bg-blue-50 rounded-lg hover:bg-blue-100">Edit</button>
+                <button onclick="deleteCommittee('${c.id}')" class="flex-1 text-red-600 text-xs font-medium py-1.5 bg-red-50 rounded-lg hover:bg-red-100">Delete</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function filterCommittees() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    renderCommittees(allCommittees.filter(c =>
+        c.name.toLowerCase().includes(q) ||
+        (c.type || '').toLowerCase().includes(q)
+    ));
+}
+
+function openAddModal() {
+    document.getElementById('modalTitle').textContent = 'New Committee';
+    document.getElementById('committeeId').value = '';
+    document.getElementById('committeeName').value = '';
+    document.getElementById('committeeType').value = '';
+    document.getElementById('committeePurpose').value = '';
+    document.getElementById('committeeStatus').value = 'active';
+    document.getElementById('committeeModal').classList.remove('hidden');
+    document.getElementById('committeeMandate').value = '';
+    document.getElementById('committeeQualifications').value = '';
+}
+
+function editCommittee(id) {
+    const c = allCommittees.find(x => x.id === id);
+    if (!c) return;
+    document.getElementById('modalTitle').textContent = 'Edit Committee';
+    document.getElementById('committeeId').value = c.id;
+    document.getElementById('committeeName').value = c.name;
+    document.getElementById('committeeType').value = c.type || '';
+    document.getElementById('committeePurpose').value = c.purpose || '';
+    document.getElementById('committeeMandate').value = c.mandate || '';
+    document.getElementById('committeeQualifications').value = c.qualification_requirements || '';
+    document.getElementById('committeeStatus').value = c.status || 'active';
+    document.getElementById('committeeModal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('committeeModal').classList.add('hidden');
+}
+
+async function saveCommittee() {
+    const id = document.getElementById('committeeId').value;
+    const name = document.getElementById('committeeName').value.trim();
+    if (!name) return alert('Committee name is required!');
+
+    const data = {
+    id,
+    name,
+    type: document.getElementById('committeeType').value,
+    purpose: document.getElementById('committeePurpose').value,
+    mandate: document.getElementById('committeeMandate').value,
+    qualification_requirements: document.getElementById('committeeQualifications').value,
+    status: document.getElementById('committeeStatus').value
+};
+
+    await fetch(BACKEND + '/committees/index.php', {
+        method: id ? 'PUT' : 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    });
+
+    closeModal();
+    loadCommittees();
+}
+
+function deleteCommittee(id) {
+    document.getElementById('deleteId').value = id;
+    document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+async function confirmDelete() {
+    const id = document.getElementById('deleteId').value;
+    await fetch(BACKEND + '/committees/index.php', {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({id})
+    });
+    document.getElementById('deleteModal').classList.add('hidden');
+    loadCommittees();
+}
+
+loadCommittees();
+</script>
+</body>
+</html>

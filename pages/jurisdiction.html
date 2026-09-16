@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jurisdiction - SK Committee System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<div class="flex h-screen overflow-hidden">
+    <div class="bg-blue-900 text-white w-64 flex-shrink-0 flex flex-col">
+        <div class="p-5 border-b border-blue-800">
+            <h1 class="text-lg font-bold">SK Committee</h1>
+            <p class="text-blue-300 text-xs mt-1">Management System</p>
+        </div>
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+            <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Dashboard</a>
+            <a href="members.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Members</a>
+            <a href="committees.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Committees</a>
+            <a href="assignments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Assignments</a>
+            <a href="jurisdiction.html" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-700 text-white text-sm font-medium">Jurisdiction</a>
+            <a href="workload.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Workload</a>
+            <a href="performance.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Performance</a>
+            <a href="reports.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Reports</a>
+        </nav>
+        <div class="p-4 border-t border-blue-800">
+            <button onclick="logout()" class="w-full text-left px-3 py-2 text-blue-300 hover:text-white text-sm rounded">Logout</button>
+        </div>
+    </div>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">Jurisdiction and Scope</h2>
+                <p class="text-gray-500 text-sm">Define coverage areas and responsibilities per committee</p>
+            </div>
+            <button onclick="openAddModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">+ Add Jurisdiction</button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6">
+            <div id="overlapWarning" class="hidden bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-5">
+                <p class="font-bold text-yellow-800">Jurisdiction Overlap Detected!</p>
+                <p class="text-yellow-600 text-sm" id="overlapDetails"></p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+                <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-blue-500">
+                    <p class="text-gray-500 text-sm">Total Jurisdictions</p>
+                    <h3 class="text-3xl font-bold text-gray-800 mt-1" id="totalJurisdictions">0</h3>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-green-500">
+                    <p class="text-gray-500 text-sm">Areas Covered</p>
+                    <h3 class="text-3xl font-bold text-green-600 mt-1" id="totalAreas">0</h3>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-yellow-500">
+                    <p class="text-gray-500 text-sm">Overlapping Areas</p>
+                    <h3 class="text-3xl font-bold text-yellow-600 mt-1" id="totalOverlaps">0</h3>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-4 mb-5">
+                <div class="flex gap-3">
+                    <input type="text" id="searchInput" onkeyup="filterJurisdictions()" placeholder="Search by area or category..." class="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select id="filterCommittee" onchange="filterJurisdictions()" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none">
+                        <option value="">All Committees</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="jurisdictionCards" class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6"></div>
+
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b">
+                    <h3 class="font-bold text-gray-800">All Jurisdiction Records</h3>
+                </div>
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b">
+                        <tr>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Committee</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Area Name</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Category</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Date Added</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jurisdictionTable">
+                        <tr><td colspan="5" class="text-center py-8 text-gray-400">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div id="jurisdictionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md mx-4">
+        <h3 class="text-lg font-bold text-gray-800 mb-4" id="modalTitle">Add Jurisdiction</h3>
+        <input type="hidden" id="jurisdictionId">
+        <div class="space-y-3">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Committee</label>
+                <select id="jCommittee" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Select committee...</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Area Name</label>
+                <input type="text" id="jArea" placeholder="e.g. Barangay Poblacion" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                <select id="jCategory" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Select category...</option>
+                    <option value="Education">Education</option>
+                    <option value="Health">Health</option>
+                    <option value="Environment">Environment</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Livelihood">Livelihood</option>
+                    <option value="Peace and Order">Peace and Order</option>
+                    <option value="Culture and Arts">Culture and Arts</option>
+                    <option value="Infrastructure">Infrastructure</option>
+                    <option value="Social Services">Social Services</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+        </div>
+        <div class="flex gap-3 mt-5">
+            <button onclick="saveJurisdiction()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700">Save</button>
+            <button onclick="closeModal()" class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg text-sm font-medium">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm mx-4 text-center">
+        <h3 class="text-lg font-bold text-gray-800 mb-2">Delete Jurisdiction?</h3>
+        <p class="text-gray-500 text-sm mb-5">This cannot be undone.</p>
+        <input type="hidden" id="deleteId">
+        <div class="flex gap-3">
+            <button onclick="confirmDelete()" class="flex-1 bg-red-600 text-white py-2 rounded-lg text-sm font-medium">Delete</button>
+            <button onclick="document.getElementById('deleteModal').classList.add('hidden')" class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg text-sm font-medium">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+var BACKEND = 'http://localhost/committee-management/backend/api';
+var allJurisdictions = [];
+var allCommittees = [];
+
+function logout() {
+    localStorage.removeItem('user');
+    window.location.href = 'login.html';
+}
+
+function fetchJSON(url) {
+    return fetch(url)
+        .then(function(res) { return res.text(); })
+        .then(function(text) {
+            try { return JSON.parse(text); }
+            catch(e) {
+                var s = text.indexOf('[');
+                if (s !== -1) { try { return JSON.parse(text.substring(s)); } catch(e2) {} }
+                return [];
+            }
+        })
+        .catch(function() { return []; });
+}
+
+function loadData() {
+    Promise.all([
+        fetchJSON(BACKEND + '/jurisdictions/index.php'),
+        fetchJSON(BACKEND + '/committees/index.php')
+    ]).then(function(results) {
+        allJurisdictions = Array.isArray(results[0]) ? results[0] : [];
+        allCommittees = Array.isArray(results[1]) ? results[1] : [];
+
+        var committeeOpts = '<option value="">Select committee...</option>';
+        var filterOpts = '<option value="">All Committees</option>';
+        for (var i = 0; i < allCommittees.length; i++) {
+            committeeOpts += '<option value="' + allCommittees[i].id + '">' + allCommittees[i].name + '</option>';
+            filterOpts += '<option value="' + allCommittees[i].id + '">' + allCommittees[i].name + '</option>';
+        }
+        document.getElementById('jCommittee').innerHTML = committeeOpts;
+        document.getElementById('filterCommittee').innerHTML = filterOpts;
+
+        renderAll(allJurisdictions);
+        updateStats();
+        checkOverlaps();
+    });
+}
+
+function updateStats() {
+    var areas = [];
+    for (var i = 0; i < allJurisdictions.length; i++) {
+        if (areas.indexOf(allJurisdictions[i].area_name) === -1) {
+            areas.push(allJurisdictions[i].area_name);
+        }
+    }
+    document.getElementById('totalJurisdictions').textContent = allJurisdictions.length;
+    document.getElementById('totalAreas').textContent = areas.length;
+
+    var areaCount = {};
+    for (var j = 0; j < allJurisdictions.length; j++) {
+        var area = allJurisdictions[j].area_name;
+        areaCount[area] = (areaCount[area] || 0) + 1;
+    }
+    var overlaps = 0;
+    for (var key in areaCount) {
+        if (areaCount[key] > 1) overlaps++;
+    }
+    document.getElementById('totalOverlaps').textContent = overlaps;
+}
+
+function checkOverlaps() {
+    var areaCount = {};
+    for (var i = 0; i < allJurisdictions.length; i++) {
+        var area = allJurisdictions[i].area_name;
+        areaCount[area] = (areaCount[area] || 0) + 1;
+    }
+    var overlaps = [];
+    for (var key in areaCount) {
+        if (areaCount[key] > 1) overlaps.push(key);
+    }
+    if (overlaps.length > 0) {
+        document.getElementById('overlapWarning').classList.remove('hidden');
+        document.getElementById('overlapDetails').textContent = overlaps.join(', ') + ' covered by multiple committees';
+    }
+}
+
+function renderAll(jurisdictions) {
+    renderCards(jurisdictions);
+    renderTable(jurisdictions);
+}
+
+function renderCards(jurisdictions) {
+    if (!jurisdictions.length) {
+        document.getElementById('jurisdictionCards').innerHTML = '<div class="col-span-2 text-center py-8 text-gray-400">No jurisdictions defined yet</div>';
+        return;
+    }
+    var grouped = {};
+    for (var i = 0; i < jurisdictions.length; i++) {
+        var j = jurisdictions[i];
+        var committee = null;
+        for (var k = 0; k < allCommittees.length; k++) {
+            if (allCommittees[k].id === j.committee_id) { committee = allCommittees[k]; break; }
+        }
+        var name = committee ? committee.name : 'Unknown';
+        if (!grouped[name]) grouped[name] = [];
+        grouped[name].push(j);
+    }
+    var html = '';
+    for (var cname in grouped) {
+        var items = grouped[cname];
+        html += '<div class="bg-white rounded-xl shadow-sm p-5 border-t-4 border-blue-500">';
+        html += '<h3 class="font-bold text-gray-800 mb-3">' + cname + ' <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">' + items.length + ' areas</span></h3>';
+        html += '<div class="space-y-2">';
+        for (var m = 0; m < items.length; m++) {
+            html += '<div class="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2">';
+            html += '<div><p class="text-sm font-medium text-gray-700">' + items[m].area_name + '</p>';
+            html += '<p class="text-xs text-gray-500">' + items[m].category + '</p></div></div>';
+        }
+        html += '</div></div>';
+    }
+    document.getElementById('jurisdictionCards').innerHTML = html;
+}
+
+function renderTable(jurisdictions) {
+    if (!jurisdictions.length) {
+        document.getElementById('jurisdictionTable').innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-400">No records found</td></tr>';
+        return;
+    }
+    var html = '';
+    for (var i = 0; i < jurisdictions.length; i++) {
+        var j = jurisdictions[i];
+        var committee = null;
+        for (var k = 0; k < allCommittees.length; k++) {
+            if (allCommittees[k].id === j.committee_id) { committee = allCommittees[k]; break; }
+        }
+        html += '<tr class="border-b hover:bg-gray-50">';
+        html += '<td class="px-6 py-4 text-sm font-medium text-gray-800">' + (committee ? committee.name : 'Unknown') + '</td>';
+        html += '<td class="px-6 py-4 text-sm text-gray-600">' + j.area_name + '</td>';
+        html += '<td class="px-6 py-4"><span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">' + j.category + '</span></td>';
+        html += '<td class="px-6 py-4 text-sm text-gray-500">' + new Date(j.created_at).toLocaleDateString('en-PH') + '</td>';
+        html += '<td class="px-6 py-4"><div class="flex gap-2">';
+        html += '<button onclick="editJurisdiction(\'' + j.id + '\')" class="text-blue-600 text-xs font-medium px-2 py-1 bg-blue-50 rounded">Edit</button>';
+        html += '<button onclick="deleteJurisdiction(\'' + j.id + '\')" class="text-red-600 text-xs font-medium px-2 py-1 bg-red-50 rounded">Delete</button>';
+        html += '</div></td></tr>';
+    }
+    document.getElementById('jurisdictionTable').innerHTML = html;
+}
+
+function filterJurisdictions() {
+    var q = document.getElementById('searchInput').value.toLowerCase();
+    var committee = document.getElementById('filterCommittee').value;
+    var filtered = [];
+    for (var i = 0; i < allJurisdictions.length; i++) {
+        var j = allJurisdictions[i];
+        if (committee && j.committee_id !== committee) continue;
+        if (q && j.area_name.toLowerCase().indexOf(q) === -1 && j.category.toLowerCase().indexOf(q) === -1) continue;
+        filtered.push(j);
+    }
+    renderAll(filtered);
+}
+
+function openAddModal() {
+    document.getElementById('modalTitle').textContent = 'Add Jurisdiction';
+    document.getElementById('jurisdictionId').value = '';
+    document.getElementById('jCommittee').value = '';
+    document.getElementById('jArea').value = '';
+    document.getElementById('jCategory').value = '';
+    document.getElementById('jurisdictionModal').classList.remove('hidden');
+}
+
+function editJurisdiction(id) {
+    var j = null;
+    for (var i = 0; i < allJurisdictions.length; i++) {
+        if (allJurisdictions[i].id === id) { j = allJurisdictions[i]; break; }
+    }
+    if (!j) return;
+    document.getElementById('modalTitle').textContent = 'Edit Jurisdiction';
+    document.getElementById('jurisdictionId').value = j.id;
+    document.getElementById('jCommittee').value = j.committee_id;
+    document.getElementById('jArea').value = j.area_name;
+    document.getElementById('jCategory').value = j.category;
+    document.getElementById('jurisdictionModal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('jurisdictionModal').classList.add('hidden');
+}
+
+function saveJurisdiction() {
+    var id = document.getElementById('jurisdictionId').value;
+    var committeeId = document.getElementById('jCommittee').value;
+    var area = document.getElementById('jArea').value.trim();
+    var category = document.getElementById('jCategory').value;
+
+    if (!committeeId || !area || !category) {
+        alert('All fields are required!');
+        return;
+    }
+
+    var method = id ? 'PUT' : 'POST';
+    fetch(BACKEND + '/jurisdictions/index.php', {
+        method: method,
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({id: id, committee_id: committeeId, area_name: area, category: category})
+    }).then(function() {
+        closeModal();
+        loadData();
+    });
+}
+
+function deleteJurisdiction(id) {
+    document.getElementById('deleteId').value = id;
+    document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+function confirmDelete() {
+    var id = document.getElementById('deleteId').value;
+    fetch(BACKEND + '/jurisdictions/index.php', {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({id: id})
+    }).then(function() {
+        document.getElementById('deleteModal').classList.add('hidden');
+        loadData();
+    });
+}
+
+loadData();
+</script>
+</body>
+</html>

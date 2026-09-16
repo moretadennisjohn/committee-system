@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance - SK Committee System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<div class="flex h-screen overflow-hidden">
+    <div class="bg-blue-900 text-white w-64 flex-shrink-0 flex flex-col">
+        <div class="p-5 border-b border-blue-800">
+            <h1 class="text-lg font-bold">SK Committee</h1>
+            <p class="text-blue-300 text-xs mt-1">Management System</p>
+        </div>
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+            <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Dashboard</a>
+            <a href="members.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Members</a>
+            <a href="committees.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Committees</a>
+            <a href="assignments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Assignments</a>
+            <a href="jurisdiction.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Jurisdiction</a>
+            <a href="workload.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Workload</a>
+            <a href="performance.html" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-700 text-white text-sm font-medium">Performance</a>
+            <a href="reports.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Reports</a>
+        </nav>
+        <div class="p-4 border-t border-blue-800">
+            <button onclick="logout()" class="w-full text-left px-3 py-2 text-blue-300 hover:text-white text-sm rounded">Logout</button>
+        </div>
+    </div>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">Performance Monitoring</h2>
+                <p class="text-gray-500 text-sm">AI-powered performance tracking and insights</p>
+            </div>
+            <button onclick="analyzePerformance()" id="analyzeBtn" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700">
+                AI Performance Analysis
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6">
+
+            <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+                <h3 class="font-bold text-gray-800 mb-3">Performance Scoring Formula</h3>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="bg-blue-50 rounded-lg p-3 text-center">
+                        <p class="text-2xl font-bold text-blue-600">50%</p>
+                        <p class="text-sm text-gray-600">Task Completion</p>
+                    </div>
+                    <div class="bg-green-50 rounded-lg p-3 text-center">
+                        <p class="text-2xl font-bold text-green-600">20%</p>
+                        <p class="text-sm text-gray-600">Attendance Rate</p>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-3 text-center">
+                        <p class="text-2xl font-bold text-purple-600">30%</p>
+                        <p class="text-sm text-gray-600">On-Time Delivery</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="aiPanel" class="hidden bg-gradient-to-r from-green-700 to-teal-700 rounded-xl p-5 mb-6 text-white">
+                <div class="flex items-center gap-3 mb-3">
+                    <h3 class="font-bold">Gemini AI Performance Insights</h3>
+                    <span id="teamStatusBadge" class="ml-auto text-xs px-3 py-1 rounded-full font-bold bg-white text-green-700"></span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                        <p class="text-xs text-green-200 mb-1">Top Performer</p>
+                        <p class="font-bold" id="topPerformer">-</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                        <p class="text-xs text-green-200 mb-1">Overall Team Score</p>
+                        <p class="font-bold text-2xl" id="teamScore">-</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm font-bold mb-2">Insights</p>
+                        <div id="aiInsights"></div>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold mb-2">Recommendations</p>
+                        <div id="aiRecommendations"></div>
+                    </div>
+                </div>
+                <div id="needsImprovementDiv" class="hidden mt-3">
+                    <p class="text-sm font-bold mb-2">Needs Improvement</p>
+                    <div id="needsImprovementList" class="flex flex-wrap gap-2"></div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
+                <h3 class="font-bold text-gray-800 mb-4">Update Attendance Record</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <select id="attendanceMember" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select member...</option>
+                    </select>
+                    <select id="attendanceCommittee" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select committee...</option>
+                    </select>
+                    <input type="number" id="attendanceRate" min="0" max="100" placeholder="Attendance rate (0-100%)" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <button onclick="saveAttendance()" class="mt-3 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700">Save Attendance</button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b flex justify-between items-center">
+                    <h3 class="font-bold text-gray-800">Member Performance Scores</h3>
+                    <select id="filterGrade" onchange="filterPerformance()" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm">
+                        <option value="">All Grades</option>
+                        <option value="Excellent">Excellent</option>
+                        <option value="Good">Good</option>
+                        <option value="Average">Average</option>
+                        <option value="Needs Improvement">Needs Improvement</option>
+                    </select>
+                </div>
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b">
+                        <tr>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Rank</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Member</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Task Completion</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Attendance</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">On-Time</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Final Score</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody id="performanceTable">
+                        <tr><td colspan="7" class="text-center py-8 text-gray-400">Loading performance data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var BACKEND = 'http://localhost/committee-management/backend/api';
+var GEMINI_KEY = 'AQ.Ab8RN6KqzYPMg3v3RoiqwyNtdBYRrbhCKBNWlrYwAnAhC_hSpw';
+var allMembers = [];
+var allCommittees = [];
+var performanceData = [];
+
+function logout() {
+    localStorage.removeItem('user');
+    window.location.href = 'login.html';
+}
+
+function fetchJSON(url) {
+    return fetch(url)
+        .then(function(res) { return res.text(); })
+        .then(function(text) {
+            try { return JSON.parse(text); }
+            catch(e) {
+                var s = text.indexOf('[');
+                if (s !== -1) { try { return JSON.parse(text.substring(s)); } catch(e2) {} }
+                return [];
+            }
+        })
+        .catch(function() { return []; });
+}
+
+function loadData() {
+    Promise.all([
+        fetchJSON(BACKEND + '/members/index.php'),
+        fetchJSON(BACKEND + '/committees/index.php')
+    ]).then(function(results) {
+        allMembers = Array.isArray(results[0]) ? results[0] : [];
+        allCommittees = Array.isArray(results[1]) ? results[1] : [];
+
+        var memberOpts = '<option value="">Select member...</option>';
+        for (var i = 0; i < allMembers.length; i++) {
+            memberOpts += '<option value="' + allMembers[i].id + '">' + allMembers[i].full_name + '</option>';
+        }
+        document.getElementById('attendanceMember').innerHTML = memberOpts;
+
+        var committeeOpts = '<option value="">Select committee...</option>';
+        for (var j = 0; j < allCommittees.length; j++) {
+            committeeOpts += '<option value="' + allCommittees[j].id + '">' + allCommittees[j].name + '</option>';
+        }
+        document.getElementById('attendanceCommittee').innerHTML = committeeOpts;
+
+        loadPerformance();
+    });
+}
+
+function loadPerformance() {
+    Promise.all([
+        fetchJSON(BACKEND + '/tasks/index.php'),
+        fetchJSON(BACKEND + '/performance/index.php')
+    ]).then(function(results) {
+        var tasks = Array.isArray(results[0]) ? results[0] : [];
+        var perfRecords = Array.isArray(results[1]) ? results[1] : [];
+
+        performanceData = [];
+        for (var i = 0; i < allMembers.length; i++) {
+            var m = allMembers[i];
+            var memberTasks = tasks.filter(function(t) { return t.member_id === m.id; });
+            var completed = memberTasks.filter(function(t) { return t.status === 'completed'; });
+            var onTime = completed.filter(function(t) {
+                return t.due_date && t.updated_at && new Date(t.updated_at) <= new Date(t.due_date);
+            });
+
+            var perfRecord = null;
+            for (var j = 0; j < perfRecords.length; j++) {
+                if (perfRecords[j].member_id === m.id) { perfRecord = perfRecords[j]; break; }
+            }
+
+            var taskCompRate = memberTasks.length > 0 ? Math.round((completed.length / memberTasks.length) * 100) : 0;
+            var attendanceRate = perfRecord ? parseFloat(perfRecord.attendance_rate) : 0;
+            var onTimeRate = completed.length > 0 ? Math.round((onTime.length / completed.length) * 100) : 0;
+            var finalScore = Math.round((taskCompRate * 0.5) + (attendanceRate * 0.2) + (onTimeRate * 0.3));
+            var grade = finalScore >= 90 ? 'Excellent' : finalScore >= 75 ? 'Good' : finalScore >= 60 ? 'Average' : 'Needs Improvement';
+
+            performanceData.push({
+                member_id: m.id,
+                member_name: m.full_name,
+                position: m.position || 'Member',
+                total_tasks: memberTasks.length,
+                completed_tasks: completed.length,
+                task_completion_rate: taskCompRate,
+                attendance_rate: attendanceRate,
+                on_time_rate: onTimeRate,
+                final_score: finalScore,
+                grade: grade
+            });
+        }
+
+        performanceData.sort(function(a, b) { return b.final_score - a.final_score; });
+        renderPerformance(performanceData);
+    });
+}
+
+function renderPerformance(data) {
+    if (!data.length) {
+        document.getElementById('performanceTable').innerHTML = '<tr><td colspan="7" class="text-center py-8 text-gray-400">No performance data yet</td></tr>';
+        return;
+    }
+    var html = '';
+    for (var i = 0; i < data.length; i++) {
+        var m = data[i];
+        var gradeColor = m.grade === 'Excellent' ? 'bg-green-100 text-green-700' :
+                        m.grade === 'Good' ? 'bg-blue-100 text-blue-700' :
+                        m.grade === 'Average' ? 'bg-yellow-100 text-yellow-700' :
+                        'bg-red-100 text-red-700';
+        var rank = i === 0 ? '1st' : i === 1 ? '2nd' : i === 2 ? '3rd' : (i + 1) + 'th';
+        var scoreColor = m.final_score >= 75 ? 'text-green-600' : m.final_score >= 60 ? 'text-yellow-600' : 'text-red-600';
+
+        html += '<tr class="border-b hover:bg-gray-50">';
+        html += '<td class="px-6 py-4 text-sm font-bold text-gray-600">' + rank + '</td>';
+        html += '<td class="px-6 py-4"><div class="flex items-center gap-2">';
+        html += '<div class="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold">' + m.member_name.charAt(0) + '</div>';
+        html += '<div><p class="text-sm font-medium text-gray-800">' + m.member_name + '</p>';
+        html += '<p class="text-xs text-gray-500">' + m.position + '</p></div></div></td>';
+        html += '<td class="px-6 py-4"><div class="flex items-center gap-2">';
+        html += '<div class="w-16 bg-gray-200 rounded-full h-2"><div class="bg-blue-500 h-2 rounded-full" style="width:' + m.task_completion_rate + '%"></div></div>';
+        html += '<span class="text-sm text-gray-600">' + m.task_completion_rate + '%</span></div>';
+        html += '<p class="text-xs text-gray-400">' + m.completed_tasks + '/' + m.total_tasks + ' tasks</p></td>';
+        html += '<td class="px-6 py-4"><div class="flex items-center gap-2">';
+        html += '<div class="w-16 bg-gray-200 rounded-full h-2"><div class="bg-green-500 h-2 rounded-full" style="width:' + m.attendance_rate + '%"></div></div>';
+        html += '<span class="text-sm text-gray-600">' + m.attendance_rate + '%</span></div></td>';
+        html += '<td class="px-6 py-4"><div class="flex items-center gap-2">';
+        html += '<div class="w-16 bg-gray-200 rounded-full h-2"><div class="bg-purple-500 h-2 rounded-full" style="width:' + m.on_time_rate + '%"></div></div>';
+        html += '<span class="text-sm text-gray-600">' + m.on_time_rate + '%</span></div></td>';
+        html += '<td class="px-6 py-4"><span class="text-xl font-bold ' + scoreColor + '">' + m.final_score + '%</span></td>';
+        html += '<td class="px-6 py-4"><span class="text-xs px-2 py-1 rounded-full font-medium ' + gradeColor + '">' + m.grade + '</span></td>';
+        html += '</tr>';
+    }
+    document.getElementById('performanceTable').innerHTML = html;
+}
+
+function filterPerformance() {
+    var grade = document.getElementById('filterGrade').value;
+    var filtered = grade ? performanceData.filter(function(m) { return m.grade === grade; }) : performanceData;
+    renderPerformance(filtered);
+}
+
+function saveAttendance() {
+    var memberId = document.getElementById('attendanceMember').value;
+    var committeeId = document.getElementById('attendanceCommittee').value;
+    var rate = document.getElementById('attendanceRate').value;
+
+    if (!memberId || !rate) { alert('Please select member and enter attendance rate!'); return; }
+    if (rate < 0 || rate > 100) { alert('Rate must be 0-100!'); return; }
+
+    fetch(BACKEND + '/performance/index.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            member_id: memberId,
+            committee_id: committeeId || null,
+            attendance_rate: parseFloat(rate),
+            task_completion_rate: 0,
+            performance_score: 0,
+            period: new Date().toISOString().slice(0, 7)
+        })
+    }).then(function() {
+        alert('Attendance saved successfully!');
+        document.getElementById('attendanceRate').value = '';
+        loadPerformance();
+    });
+}
+
+function analyzePerformance() {
+    var btn = document.getElementById('analyzeBtn');
+    btn.textContent = 'Analyzing...';
+    btn.disabled = true;
+
+    var membersList = '';
+    for (var i = 0; i < performanceData.length; i++) {
+        var m = performanceData[i];
+        membersList += '- ' + m.member_name + ' | Score:' + m.final_score + '% | Tasks:' + m.completed_tasks + '/' + m.total_tasks + ' | Attendance:' + m.attendance_rate + '% | OnTime:' + m.on_time_rate + '% | Grade:' + m.grade + '\n';
+    }
+
+    var prompt = 'You are a performance analyst for SK Committee System Philippines.\n\nMember Performance:\n' + membersList + '\nScoring: Task Completion=50%, Attendance=20%, On-Time=30%\n\nRespond ONLY in JSON (no markdown):\n{"top_performer":"name","needs_improvement"🙁"name1"],"insights"🙁"insight1","insight2","insight3"],"recommendations"🙁"rec1","rec2"],"overall_team_score":0,"team_status":"excellent or good or average or poor"}';
+
+    fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + GEMINI_KEY, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({contents: [{parts: [{text: prompt}]}]})
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        var text = data.candidates && data.candidates[0] ? data.candidates[0].content.parts[0].text : '';
+        text = text.replace(/```json\n?|\n?```/g, '').trim();
+        var jsonStart = text.indexOf('{');
+        var jsonEnd = text.lastIndexOf('}');
+        var ai = JSON.parse(text.substring(jsonStart, jsonEnd + 1));
+
+        document.getElementById('aiPanel').classList.remove('hidden');
+        document.getElementById('topPerformer').textContent = ai.top_performer || '-';
+        document.getElementById('teamScore').textContent = (ai.overall_team_score || 0) + '%';
+
+        var badge = document.getElementById('teamStatusBadge');
+        badge.textContent = (ai.team_status || 'N/A').toUpperCase();
+
+        var insights = ai.insights || [];
+        var insightsHtml = '';
+        for (var i = 0; i < insights.length; i++) {
+            insightsHtml += '<p class="text-green-100 text-xs mb-1">- ' + insights[i] + '</p>';
+        }
+        document.getElementById('aiInsights').innerHTML = insightsHtml;
+
+        var recs = ai.recommendations || [];
+        var recsHtml = '';
+        for (var j = 0; j < recs.length; j++) {
+            recsHtml += '<p class="text-green-100 text-xs mb-1">- ' + recs[j] + '</p>';
+        }
+        document.getElementById('aiRecommendations').innerHTML = recsHtml;
+
+        var needs = ai.needs_improvement || [];
+        if (needs.length) {
+            document.getElementById('needsImprovementDiv').classList.remove('hidden');
+            var needsHtml = '';
+            for (var k = 0; k < needs.length; k++) {
+                needsHtml += '<span class="text-xs bg-red-500 bg-opacity-50 px-2 py-1 rounded-full">' + needs[k] + '</span>';
+            }
+            document.getElementById('needsImprovementList').innerHTML = needsHtml;
+        }
+    })
+    .catch(function(e) {
+        document.getElementById('aiPanel').classList.remove('hidden');
+        document.getElementById('aiSummary') && (document.getElementById('aiSummary').textContent = 'AI error: ' + e.message);
+        alert('AI analysis failed: ' + e.message);
+    })
+    .finally(function() {
+        btn.textContent = 'AI Performance Analysis';
+        btn.disabled = false;
+    });
+}
+
+loadData();
+</script>
+</body>
+</html>
