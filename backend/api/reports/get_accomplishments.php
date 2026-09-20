@@ -1,5 +1,5 @@
 <?php
-require_once 'C:/xampp/htdocs/committee-management/backend/config/database.php';
+require_once _DIR_ . '/../../config/database.php';
 corsHeaders();
 
 $committees  = supabaseRequest('committees?select=*');

@@ -1,8 +1,8 @@
 <?php
-require_once 'C:/xampp/htdocs/committee-management/backend/config/database.php';
-require_once 'C:/xampp/htdocs/committee-management/backend/phpmailer/PHPMailer.php';
-require_once 'C:/xampp/htdocs/committee-management/backend/phpmailer/SMTP.php';
-require_once 'C:/xampp/htdocs/committee-management/backend/phpmailer/Exception.php';
+require_once _DIR_ . '/../config/database.php';
+require_once _DIR_ . '/../phpmailer/PHPMailer.php';
+require_once _DIR_ . '/../phpmailer/SMTP.php';
+require_once _DIR_ . '/../phpmailer/Exception.php';
 corsHeaders();
 
 $data = json_decode(file_get_contents('php://input'), true);

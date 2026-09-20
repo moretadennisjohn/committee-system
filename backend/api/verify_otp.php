@@ -1,5 +1,5 @@
 <?php
-require_once 'C:/xampp/htdocs/committee-management/backend/config/database.php';
+require_once _DIR_ . '/../config/database.php';
 corsHeaders();
 
 $data  = json_decode(file_get_contents('php://input'), true);
