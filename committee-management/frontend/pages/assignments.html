@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignments - SK Committee System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<div class="flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <div class="bg-blue-900 text-white w-64 flex-shrink-0 flex flex-col">
+        <div class="p-5 border-b border-blue-800">
+            <h1 class="text-lg font-bold">SK Committee</h1>
+            <p class="text-blue-300 text-xs mt-1">Management System</p>
+        </div>
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+            <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Dashboard</a>
+            <a href="members.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Members</a>
+            <a href="committees.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Committees</a>
+            <a href="assignments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-700 text-white text-sm font-medium">Assignments</a>
+            <a href="jurisdiction.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Jurisdiction</a>
+            <a href="workload.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Workload</a>
+            <a href="performance.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Performance</a>
+            <a href="reports.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Reports</a>
+        </nav>
+        <div class="p-4 border-t border-blue-800">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="bg-blue-600 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">A</div>
+                <div>
+                    <p class="text-sm font-medium">Admin</p>
+                    <p class="text-xs text-blue-300">admin@sk.gov</p>
+                </div>
+            </div>
+            <button onclick="logout()" class="w-full text-left px-3 py-2 text-blue-300 hover:text-white text-sm rounded hover:bg-blue-800">Logout</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <div class="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">Member Assignments</h2>
+                <p class="text-gray-500 text-sm">AI-powered criteria-based member recommendations</p>
+            </div>
+            <button onclick="openAssignModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">+ Manual Assign</button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6">
+
+            <!-- AI Panel -->
+            <div class="bg-gradient-to-r from-blue-700 to-purple-700 rounded-xl p-6 mb-6 text-white">
+                <div class="flex items-center gap-3 mb-4">
+                    <div>
+                        <h3 class="font-bold text-lg">Gemini AI - Criteria-Based Recommendation</h3>
+                        <p class="text-blue-200 text-sm">Set criteria and let AI find the best members</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-blue-200 mb-1">Select Committee</label>
+                        <select id="aiCommittee" class="w-full bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
+                            <option value="">Choose committee...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-blue-200 mb-1">Required Skills</label>
+                        <input type="text" id="aiSkills" placeholder="e.g. leadership, communication" class="w-full bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg px-3 py-2 text-sm text-white placeholder-blue-300 focus:outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-blue-200 mb-1">Max Workload</label>
+                        <select id="aiMaxWorkload" class="w-full bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
+                            <option value="3">Max 3 tasks</option>
+                            <option value="4">Max 4 tasks</option>
+                            <option value="5" selected>Max 5 tasks</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-blue-200 mb-1">Availability</label>
+                        <select id="aiAvailability" class="w-full bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
+                            <option value="available">Available Only</option>
+                            <option value="any">Any Status</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-blue-200 mb-1">Preferred Position</label>
+                        <select id="aiPosition" class="w-full bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg px-3 py-2 text-sm text-white focus:outline-none">
+                            <option value="">Any Position</option>
+                            <option value="SK Chairman">SK Chairman</option>
+                            <option value="SK Kagawad">SK Kagawad</option>
+                            <option value="SK Secretary">SK Secretary</option>
+                            <option value="SK Treasurer">SK Treasurer</option>
+                            <option value="SK Member">SK Member</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="getAIRecommendation()" id="aiBtn" class="bg-white text-blue-700 px-6 py-2 rounded-lg text-sm font-bold hover:bg-blue-50">
+                    Get AI Recommendation
+                </button>
+                <div id="aiResults" class="hidden mt-4"></div>
+            </div>
+
+            <!-- Assignments Table -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="px-6 py-4 border-b flex justify-between items-center">
+                    <h3 class="font-bold text-gray-800">Current Assignments</h3>
+                    <input type="text" id="searchInput" onkeyup="filterAssignments()" placeholder="Search..." class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b">
+                        <tr>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Member</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Committee</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Role</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Date Assigned</th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assignmentsTable">
+                        <tr><td colspan="5" class="text-center py-8 text-gray-400">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Manual Assign Modal -->
+<div id="assignModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md mx-4">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">Manual Assignment</h3>
+        <div class="space-y-3">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Select Member</label>
+                <select id="assignMember" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Choose member...</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Select Committee</label>
+                <select id="assignCommittee" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Choose committee...</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                <select id="assignRole" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="Member">Member</option>
+                    <option value="Chairperson">Chairperson</option>
+                    <option value="Vice Chairperson">Vice Chairperson</option>
+                    <option value="Secretary">Secretary</option>
+                    <option value="Treasurer">Treasurer</option>
+                </select>
+            </div>
+        </div>
+        <div class="flex gap-3 mt-5">
+            <button onclick="saveAssignment()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700">Assign</button>
+            <button onclick="closeModal()" class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg text-sm font-medium">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm mx-4 text-center">
+        <h3 class="text-lg font-bold text-gray-800 mb-2">Remove Assignment?</h3>
+        <p class="text-gray-500 text-sm mb-5">This will remove the member from the committee.</p>
+        <input type="hidden" id="deleteId">
+        <div class="flex gap-3">
+            <button onclick="confirmDelete()" class="flex-1 bg-red-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-red-700">Remove</button>
+            <button onclick="document.getElementById('deleteModal').classList.add('hidden')" class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg text-sm font-medium">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+var BACKEND = 'https://cmas.sjdm-legislative.com/backend/api';
+var GEMINI_KEY = 'AQ.Ab8RN6KqzYPMg3v3RoiqwyNtdBYRrbhCKBNWlrYwAnAhC_hSpw';
+var allAssignments = [];
+var allMembers = [];
+var allCommittees = [];
+
+function logout() {
+    localStorage.removeItem('user');
+    window.location.href = 'login.html';
+}
+
+function fetchJSON(url) {
+    return fetch(url)
+        .then(function(res) { return res.text(); })
+        .then(function(text) {
+            try { return JSON.parse(text); }
+            catch(e) {
+                var s = text.indexOf('[');
+                if (s !== -1) { try { return JSON.parse(text.substring(s)); } catch(e2) {} }
+                return [];
+            }
+        })
+        .catch(function() { return []; });
+}
+
+function loadData() {
+    Promise.all([
+        fetchJSON(BACKEND + '/members/index.php'),
+        fetchJSON(BACKEND + '/committees/index.php'),
+        fetchJSON(BACKEND + '/assignments/index.php')
+    ]).then(function(results) {
+        allMembers = Array.isArray(results[0]) ? results[0] : [];
+        allCommittees = Array.isArray(results[1]) ? results[1] : [];
+        allAssignments = Array.isArray(results[2]) ? results[2] : [];
+
+        var memberOpts = '<option value="">Choose member...</option>';
+        for (var i = 0; i < allMembers.length; i++) {
+            memberOpts += '<option value="' + allMembers[i].id + '">' + allMembers[i].full_name + ' (' + (allMembers[i].position || 'Member') + ')</option>';
+        }
+
+        var committeeOpts = '<option value="">Choose committee...</option>';
+        for (var j = 0; j < allCommittees.length; j++) {
+            committeeOpts += '<option value="' + allCommittees[j].id + '">' + allCommittees[j].name + '</option>';
+        }
+
+        document.getElementById('assignMember').innerHTML = memberOpts;
+        document.getElementById('assignCommittee').innerHTML = committeeOpts;
+        document.getElementById('aiCommittee').innerHTML = committeeOpts;
+
+        renderAssignments(allAssignments);
+    });
+}
+
+function renderAssignments(assignments) {
+    if (!assignments.length) {
+        document.getElementById('assignmentsTable').innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-400">No assignments yet</td></tr>';
+        return;
+    }
+    var html = '';
+    for (var i = 0; i < assignments.length; i++) {
+        var a = assignments[i];
+        var member = null;
+        var committee = null;
+        for (var j = 0; j < allMembers.length; j++) {
+            if (allMembers[j].id === a.member_id) { member = allMembers[j]; break; }
+        }
+        for (var k = 0; k < allCommittees.length; k++) {
+            if (allCommittees[k].id === a.committee_id) { committee = allCommittees[k]; break; }
+        }
+        html += '<tr class="border-b hover:bg-gray-50">';
+        html += '<td class="px-6 py-4"><div class="flex items-center gap-2">';
+        html += '<div class="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold">' + (member ? member.full_name.charAt(0) : '?') + '</div>';
+        html += '<div><p class="text-sm font-medium text-gray-800">' + (member ? member.full_name : 'Unknown') + '</p>';
+        html += '<p class="text-xs text-gray-500">' + (member ? (member.position || 'Member') : '') + '</p></div></div></td>';
+        html += '<td class="px-6 py-4 text-sm text-gray-600">' + (committee ? committee.name : 'Unknown') + '</td>';
+        html += '<td class="px-6 py-4"><span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">' + (a.role || 'Member') + '</span></td>';
+        html += '<td class="px-6 py-4 text-sm text-gray-500">' + new Date(a.assigned_at).toLocaleDateString('en-PH') + '</td>';
+        html += '<td class="px-6 py-4"><button onclick="deleteAssignment(\'' + a.id + '\')" class="text-red-600 text-xs font-medium px-2 py-1 bg-red-50 rounded">Remove</button></td>';
+        html += '</tr>';
+    }
+    document.getElementById('assignmentsTable').innerHTML = html;
+}
+
+function filterAssignments() {
+    var q = document.getElementById('searchInput').value.toLowerCase();
+    var filtered = [];
+    for (var i = 0; i < allAssignments.length; i++) {
+        var a = allAssignments[i];
+        var member = null;
+        var committee = null;
+        for (var j = 0; j < allMembers.length; j++) {
+            if (allMembers[j].id === a.member_id) { member = allMembers[j]; break; }
+        }
+        for (var k = 0; k < allCommittees.length; k++) {
+            if (allCommittees[k].id === a.committee_id) { committee = allCommittees[k]; break; }
+        }
+        if ((member && member.full_name.toLowerCase().indexOf(q) !== -1) ||
+            (committee && committee.name.toLowerCase().indexOf(q) !== -1)) {
+            filtered.push(a);
+        }
+    }
+    renderAssignments(filtered);
+}
+
+function openAssignModal() {
+    document.getElementById('assignModal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('assignModal').classList.add('hidden');
+}
+
+function saveAssignment() {
+    var memberId = document.getElementById('assignMember').value;
+    var committeeId = document.getElementById('assignCommittee').value;
+    var role = document.getElementById('assignRole').value;
+
+    if (!memberId || !committeeId) {
+        alert('Please select both member and committee!');
+        return;
+    }
+
+    fetch(BACKEND + '/assignments/index.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({member_id: memberId, committee_id: committeeId, role: role})
+    })
+    .then(function(res) { return res.text(); })
+    .then(function(text) {
+        var data;
+        try { data = JSON.parse(text); }
+        catch(e) {
+            var s = text.indexOf('{');
+            data = s !== -1 ? JSON.parse(text.substring(s)) : {success: true};
+        }
+        if (data.success === false) {
+            alert('Error: ' + (data.message || 'Failed'));
+        } else {
+            alert('Member assigned successfully!');
+            closeModal();
+            loadData();
+        }
+    });
+}
+
+function deleteAssignment(id) {
+    document.getElementById('deleteId').value = id;
+    document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+function confirmDelete() {
+    var id = document.getElementById('deleteId').value;
+    fetch(BACKEND + '/assignments/index.php', {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({id: id})
+    }).then(function() {
+        document.getElementById('deleteModal').classList.add('hidden');
+        loadData();
+    });
+}
+
+function getAIRecommendation() {
+    var committeeId = document.getElementById('aiCommittee').value;
+    if (!committeeId) {
+        alert('Please select a committee first!');
+        return;
+    }
+
+    var btn = document.getElementById('aiBtn');
+    btn.textContent = 'Analyzing...';
+    btn.disabled = true;
+
+    var resultsDiv = document.getElementById('aiResults');
+    resultsDiv.classList.remove('hidden');
+    resultsDiv.innerHTML = '<div class="bg-white bg-opacity-20 rounded-lg p-4 text-center"><p class="text-sm">AI is analyzing members based on your criteria...</p></div>';
+
+    var skills = document.getElementById('aiSkills').value;
+    var maxWorkload = document.getElementById('aiMaxWorkload').value;
+    var availability = document.getElementById('aiAvailability').value;
+    var position = document.getElementById('aiPosition').value;
+
+    var committee = null;
+    for (var i = 0; i < allCommittees.length; i++) {
+        if (allCommittees[i].id === committeeId) { committee = allCommittees[i]; break; }
+    }
+
+    var assignedIds = [];
+    for (var j = 0; j < allAssignments.length; j++) {
+        if (allAssignments[j].committee_id === committeeId) {
+            assignedIds.push(allAssignments[j].member_id);
+        }
+    }
+
+    var eligible = [];
+    for (var k = 0; k < allMembers.length; k++) {
+        var m = allMembers[k];
+        if (assignedIds.indexOf(m.id) === -1) {
+            if (availability === 'available' && m.availability !== 'available') continue;
+            eligible.push(m);
+        }
+    }
+
+    if (!eligible.length) {
+        resultsDiv.innerHTML = '<div class="bg-yellow-500 bg-opacity-30 rounded-lg p-4 text-sm">No eligible members found.</div>';
+        btn.textContent = 'Get AI Recommendation';
+        btn.disabled = false;
+        return;
+    }
+
+    fetchJSON(BACKEND + '/tasks/index.php').then(function(tasks) {
+        var taskCounts = {};
+        for (var t = 0; t < tasks.length; t++) {
+            if (tasks[t].status === 'pending' && tasks[t].member_id) {
+                taskCounts[tasks[t].member_id] = (taskCounts[tasks[t].member_id] || 0) + 1;
+            }
+        }
+
+        var membersList = '';
+        for (var m = 0; m < eligible.length; m++) {
+            var mem = eligible[m];
+            var skillsArr = Array.isArray(mem.skills) ? mem.skills.join(', ') : (mem.skills || 'None');
+            var taskCount = taskCounts[mem.id] || 0;
+            membersList += '- ID:' + mem.id + ' | Name:' + mem.full_name + ' | Position:' + (mem.position || 'Member') + ' | Skills:' + skillsArr + ' | Tasks:' + taskCount + '/' + maxWorkload + ' | Availability:' + mem.availability + '\n';
+        }
+
+        var prompt = 'You are an AI for SK Committee Management System Philippines.\n\nCommittee: ' + (committee ? committee.name : '') + '\nType: ' + (committee ? (committee.type || 'General') : '') + '\nPurpose: ' + (committee ? (committee.purpose || 'Not specified') : '') + '\nRequired Skills: ' + (skills || 'Any') + '\nMax Workload: ' + maxWorkload + ' tasks\nPreferred Position: ' + (position || 'Any') + '\n\nEligible Members:\n' + membersList + '\nRecommend TOP 3 best members. Respond ONLY in JSON format with no markdown:\n{"recommendations":[{"member_id":"uuid","member_name":"name","score":95,"reason":"brief reason","skills_match":"high","workload_status":"light"}],"summary":"brief summary"}';
+
+        fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + GEMINI_KEY, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({contents: [{parts: [{text: prompt}]}]})
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(geminiData) {
+            var responseText = geminiData.candidates && geminiData.candidates[0] ? geminiData.candidates[0].content.parts[0].text : '';
+            responseText = responseText.replace(/```json\n?|\n?```/g, '').trim();
+
+            var jsonStart = responseText.indexOf('{');
+            var jsonEnd = responseText.lastIndexOf('}');
+            if (jsonStart === -1 || jsonEnd === -1) throw new Error('Invalid response');
+
+            var aiData = JSON.parse(responseText.substring(jsonStart, jsonEnd + 1));
+            var recs = aiData.recommendations || [];
+
+            if (!recs.length) {
+                resultsDiv.innerHTML = '<div class="bg-yellow-500 bg-opacity-30 rounded-lg p-4 text-sm">No recommendations found.</div>';
+                return;
+            }
+
+            var html = '<div class="bg-white bg-opacity-15 rounded-xl p-4">';
+            html += '<h4 class="font-bold mb-2">AI Recommendations (' + recs.length + ' found)</h4>';
+            html += '<p class="text-blue-100 text-xs mb-3">' + (aiData.summary || '') + '</p>';
+            html += '<div class="space-y-3">';
+
+            for (var r = 0; r < recs.length; r++) {
+                var rec = recs[r];
+                html += '<div class="bg-white bg-opacity-20 rounded-lg p-3 flex items-start justify-between gap-3" id="rec' + r + '">';
+                html += '<div class="flex items-start gap-3 flex-1">';
+                html += '<div class="bg-white text-blue-700 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">' + (r + 1) + '</div>';
+                html += '<div>';
+                html += '<p class="font-medium text-sm">' + rec.member_name + '</p>';
+                html += '<p class="text-blue-200 text-xs mt-0.5">' + rec.reason + '</p>';
+                html += '<div class="flex gap-2 mt-1.5">';
+                html += '<span class="text-xs bg-white bg-opacity-20 px-2 py-0.5 rounded-full">Skills: ' + rec.skills_match + '</span>';
+                html += '<span class="text-xs bg-yellow-400 text-yellow-900 px-2 py-0.5 rounded-full font-bold">Score: ' + rec.score + '/100</span>';
+                html += '</div></div></div>';
+                html += '<div class="flex gap-2">';
+                html += '<button onclick="acceptRec(\'' + rec.member_id + '\',\'' + committeeId + '\',\'' + rec.member_name + '\',' + r + ')" class="bg-green-500 text-white text-xs px-3 py-1.5 rounded-lg">Accept</button>';
+                html += '<button onclick="document.getElementById(\'rec' + r + '\').style.opacity=\'0.4\'" class="bg-red-500 text-white text-xs px-3 py-1.5 rounded-lg">Reject</button>';
+                html += '</div></div>';
+            }
+
+            html += '</div></div>';
+            resultsDiv.innerHTML = html;
+        })
+        .catch(function(e) {
+            resultsDiv.innerHTML = '<div class="bg-red-500 bg-opacity-30 rounded-lg p-4 text-sm">AI error: ' + e.message + '</div>';
+        })
+        .finally(function() {
+            btn.textContent = 'Get AI Recommendation';
+            btn.disabled = false;
+        });
+    });
+}
+
+function acceptRec(memberId, committeeId, memberName, index) {
+    if (!confirm('Assign ' + memberName + ' to this committee?')) return;
+    fetch(BACKEND + '/assignments/index.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({member_id: memberId, committee_id: committeeId, role: 'Member'})
+    })
+    .then(function(res) { return res.text(); })
+    .then(function(text) {
+        var data;
+        try { data = JSON.parse(text); }
+        catch(e) { data = {success: true}; }
+        if (data.success === false) {
+            alert('Error: ' + (data.message || 'Failed'));
+        } else {
+            alert(memberName + ' assigned successfully!');
+            document.getElementById('rec' + index).style.opacity = '0.4';
+            loadData();
+        }
+    });
+}
+
+loadData();
+</script>
+</body>
+</html>
