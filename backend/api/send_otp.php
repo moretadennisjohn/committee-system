@@ -1,8 +1,8 @@
 <?php
-require_once _DIR_ . '/../config/database.php';
-require_once _DIR_ . '/../phpmailer/PHPMailer.php';
-require_once _DIR_ . '/../phpmailer/SMTP.php';
-require_once _DIR_ . '/../phpmailer/Exception.php';
+require_once '/var/www/html/backend/config/database.php';
+require_once '/var/www/html/backend/phpmailer/PHPMailer.php';
+require_once '/var/www/html/backend/phpmailer/SMTP.php';
+require_once '/var/www/html/backend/phpmailer/Exception.php';
 corsHeaders();
 
 $data = json_decode(file_get_contents('php://input'), true);
@@ -13,7 +13,6 @@ if (!$email) {
     exit;
 }
 
-// Check if user exists in Supabase
 $user = supabaseRequest('users?email=eq.' . urlencode($email) . '&select=*');
 
 if (empty($user)) {
@@ -21,11 +20,9 @@ if (empty($user)) {
     exit;
 }
 
-// Generate 6-digit OTP
 $otp = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
 $expires = date('Y-m-d H:i:s', strtotime('+10 minutes'));
 
-// Save OTP to Supabase
 supabaseRequest('otp_codes', 'POST', [
     'email'      => $email,
     'otp_code'   => $otp,
@@ -33,22 +30,19 @@ supabaseRequest('otp_codes', 'POST', [
     'used'       => false
 ]);
 
-// Send email via PHPMailer
 try {
     $mail = new PHPMailer\PHPMailer\PHPMailer(true);
     $mail->isSMTP();
     $mail->Host       = 'smtp.gmail.com';
     $mail->SMTPAuth   = true;
     $mail->Username   = 'moretadennisjohn@gmail.com';
-    $mail->Password   = 'cypkkynxengmadoh';
+    $mail->Password   = 'mhnodyqxtfufocbf';
     $mail->SMTPSecure = 'tls';
     $mail->Port       = 587;
-
     $mail->setFrom('moretadennisjohn@gmail.com', 'SK Committee System');
     $mail->addAddress($email);
     $mail->Subject = 'Your OTP Code - SK Committee System';
     $mail->Body    = 'Your OTP code is: ' . $otp . "\n\nThis code expires in 10 minutes.\n\nSK Committee Management System";
-
     $mail->send();
     echo json_encode(['success' => true, 'message' => 'OTP sent successfully']);
 } catch (Exception $e) {
