@@ -28,7 +28,7 @@ foreach ($envPaths as $envFile) {
 define('SUPABASE_URL', 'https://nruuovzxuxagwgrpdnmc.supabase.co');
 define('SUPABASE_ANON_KEY', 'sb_publishable_pl8UNT15Ljs3RreIiIQVDA_l_-Erm-D');
 define('SUPABASE_API', SUPABASE_URL . '/rest/v1/');
-define('GEMINI_API_KEY', getenv('GEMINI_API_KEY') ?: '');
+define('GEMINI_API_KEY', getenv('GEMINI_API_KEY') ?: 'AIzaSyAppud8w8Jtop2rwBt8HXORD01P5mdBotY');
 
 function supabaseRequest($endpoint, $method = 'GET', $data = null) {
     $url = SUPABASE_API . $endpoint;
@@ -62,7 +62,7 @@ function corsHeaders() {
     header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
     header('Access-Control-Allow-Headers: Content-Type, Authorization, apikey');
     header('Content-Type: application/json');
-    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
         http_response_code(200);
         exit(0);
     }

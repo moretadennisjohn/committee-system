@@ -1,5 +1,5 @@
 <?php
-require_once _DIR_ . '/../../config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 corsHeaders();
 
 $committees  = supabaseRequest('committees?select=*');

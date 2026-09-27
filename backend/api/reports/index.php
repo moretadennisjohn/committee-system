@@ -1,6 +1,6 @@
 <<?php
 ob_start();
-require_once 'C:/xampp/htdocs/committee-management/backend/config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 corsHeaders();
 ob_clean();
 

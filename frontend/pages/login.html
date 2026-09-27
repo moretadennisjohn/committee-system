@@ -191,7 +191,20 @@
     </div>
 
     <script>
-var BACKEND = 'http://localhost/committee-management/backend/api';
+function getBackendURL() {
+    var path = window.location.pathname;
+    var idx = path.search(/\/(frontend\/)?pages\//);
+    var base = '';
+    if (idx !== -1) {
+        base = path.substring(0, idx);
+    } else if (path.indexOf('.') !== -1) {
+        base = path.substring(0, path.lastIndexOf('/'));
+    } else {
+        base = path.replace(/\/$/, '');
+    }
+    return window.location.origin + base + '/backend/api';
+}
+var BACKEND = getBackendURL();
 
 function showMsg(msg, type) {
     var box = document.getElementById('msgBox');
@@ -213,7 +226,7 @@ function sendOTP() {
     btn.textContent = 'Sending...';
     btn.disabled = true;
 
-    fetch('http://localhost/committee-management/backend/api/send_otp.php', {
+    fetch(BACKEND + '/send_otp.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({email: email})
@@ -247,7 +260,7 @@ function verifyOTP() {
     btn.textContent = 'Verifying...';
     btn.disabled = true;
 
-    fetch('http://localhost/committee-management/backend/api/verify_otp.php', {
+    fetch(BACKEND + '/verify_otp.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({email: email, otp: otp})

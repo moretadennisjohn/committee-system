@@ -1,4 +1,17 @@
-const BACKEND = 'http://localhost/committee-management/backend/api';
+function getBackendURL() {
+    var path = window.location.pathname;
+    var idx = path.search(/\/(frontend\/)?pages\//);
+    var base = '';
+    if (idx !== -1) {
+        base = path.substring(0, idx);
+    } else if (path.indexOf('.') !== -1) {
+        base = path.substring(0, path.lastIndexOf('/'));
+    } else {
+        base = path.replace(/\/$/, '');
+    }
+    return window.location.origin + base + '/backend/api';
+}
+var BACKEND = getBackendURL();
 
 async function fetchJSON(url) {
     try {
