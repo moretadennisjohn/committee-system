@@ -1,0 +1,4 @@
+RewriteEngine On
+
+# Redirect legacy /committee-management/ paths to root paths seamlessly
+RewriteRule ^committee-management/(.*)$ /$1 [R=301,L]
