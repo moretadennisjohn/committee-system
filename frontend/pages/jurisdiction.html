@@ -14,17 +14,24 @@
             <p class="text-blue-300 text-xs mt-1">Management System</p>
         </div>
         <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
-            <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Dashboard</a>
-            <a href="members.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Members</a>
-            <a href="committees.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Committees</a>
-            <a href="assignments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Assignments</a>
-            <a href="jurisdiction.html" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-700 text-white text-sm font-medium">Jurisdiction</a>
-            <a href="workload.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Workload</a>
-            <a href="performance.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Performance</a>
-            <a href="reports.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Reports</a>
+            <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">📊 Dashboard</a>
+            <a href="members.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">👥 Members</a>
+            <a href="committees.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">🏛️ Committees</a>
+            <a href="assignments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">📋 Assignments</a>
+            <a href="jurisdiction.html" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-700 text-white text-sm font-medium">🗺️ Jurisdiction</a>
+            <a href="workload.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">⚖️ Workload</a>
+            <a href="performance.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">📈 Performance</a>
+            <a href="reports.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">📄 Reports</a>
         </nav>
         <div class="p-4 border-t border-blue-800">
-            <button onclick="logout()" class="w-full text-left px-3 py-2 text-blue-300 hover:text-white text-sm rounded">Logout</button>
+            <div class="flex items-center gap-3 mb-3">
+                <div class="bg-blue-600 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">A</div>
+                <div>
+                    <p class="text-sm font-medium">Admin</p>
+                    <p class="text-xs text-blue-300" id="sidebarEmail">admin@sk.gov</p>
+                </div>
+            </div>
+            <button onclick="logout()" class="w-full text-left px-3 py-2 text-blue-300 hover:text-white text-sm rounded hover:bg-blue-800">🚪 Logout</button>
         </div>
     </div>
 
@@ -146,7 +153,7 @@
 </div>
 
 <script>
-var BACKEND = 'https://cmas.sjdm-legislative.com/backend/api';
+var BACKEND = 'http://localhost/committee-management/backend/api';
 var allJurisdictions = [];
 var allCommittees = [];
 

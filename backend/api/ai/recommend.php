@@ -78,29 +78,47 @@ Respond ONLY in this exact JSON format:
   \"summary\": \"brief overall recommendation summary\"
 }";
 
+$geminiKey = defined('GEMINI_API_KEY') && GEMINI_API_KEY !== '' ? GEMINI_API_KEY : (getenv('GEMINI_API_KEY') ?: '');
+if (!$geminiKey) {
+    echo json_encode(['success' => false, 'message' => 'Gemini API key is not configured in .env. Please set GEMINI_API_KEY in your .env file.']);
+    exit;
+}
+
 // Call Gemini API
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AQ.Ab8RN6LxwEHD8ygzbNkyJ4rUVl29qTF4JtKbq3YmLhCPIKhKkA');
+curl_setopt($ch, CURLOPT_URL, 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' . $geminiKey);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
     'contents' => [['parts' => [['text' => $prompt]]]]
 ]));
 
 $response = curl_exec($ch);
+$curlErr = curl_error($ch);
 curl_close($ch);
 
+if ($curlErr) {
+    echo json_encode(['success' => false, 'message' => 'cURL error: ' . $curlErr]);
+    exit;
+}
+
 $result = json_decode($response, true);
+if (isset($result['error'])) {
+    echo json_encode(['success' => false, 'message' => $result['error']['message'] ?? 'Gemini API error', 'error' => $result['error']]);
+    exit;
+}
+
 $text = $result['candidates'][0]['content']['parts'][0]['text'] ?? '';
 
 // Clean JSON from response
-$text = preg_replace('/```json\n?|\n?```/', '', $text);
+$text = preg_replace('/```json\n?|```/i', '', $text);
 $text = trim($text);
 $aiData = json_decode($text, true);
 
 if (!$aiData) {
-    echo json_encode(['success' => false, 'message' => 'AI response error', 'raw' => $text]);
+    echo json_encode(['success' => false, 'message' => 'Failed to parse AI response as JSON', 'raw' => $text]);
     exit;
 }
 

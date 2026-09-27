@@ -191,7 +191,7 @@
     </div>
 
     <script>
-var BACKEND = 'https://cmas.sjdm-legislative.com/backend/api';
+var BACKEND = 'http://localhost/committee-management/backend/api';
 
 function showMsg(msg, type) {
     var box = document.getElementById('msgBox');
@@ -213,7 +213,7 @@ function sendOTP() {
     btn.textContent = 'Sending...';
     btn.disabled = true;
 
-    fetch('https://cmas.sjdm-legislative.com/backend/api/send_otp.php', {
+    fetch('http://localhost/committee-management/backend/api/send_otp.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({email: email})
@@ -247,7 +247,7 @@ function verifyOTP() {
     btn.textContent = 'Verifying...';
     btn.disabled = true;
 
-    fetch('https://cmas.sjdm-legislative.com/backend/api/verify_otp.php', {
+    fetch('http://localhost/committee-management/backend/api/verify_otp.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({email: email, otp: otp})

@@ -1,9 +1,34 @@
 <?php
 ob_start();
 
+// Load .env file if present
+$envPaths = [
+    __DIR__ . '/../../.env',
+    __DIR__ . '/../../../.env',
+    __DIR__ . '/../.env'
+];
+foreach ($envPaths as $envFile) {
+    if (file_exists($envFile)) {
+        $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line === '' || strpos($line, '#') === 0) continue;
+            if (strpos($line, '=') !== false) {
+                list($key, $val) = explode('=', $line, 2);
+                $key = trim($key);
+                $val = trim($val, " \t\n\r\0\x0B\"'");
+                putenv("{$key}={$val}");
+                $_ENV[$key] = $val;
+            }
+        }
+        break;
+    }
+}
+
 define('SUPABASE_URL', 'https://nruuovzxuxagwgrpdnmc.supabase.co');
 define('SUPABASE_ANON_KEY', 'sb_publishable_pl8UNT15Ljs3RreIiIQVDA_l_-Erm-D');
 define('SUPABASE_API', SUPABASE_URL . '/rest/v1/');
+define('GEMINI_API_KEY', getenv('GEMINI_API_KEY') ?: '');
 
 function supabaseRequest($endpoint, $method = 'GET', $data = null) {
     $url = SUPABASE_API . $endpoint;

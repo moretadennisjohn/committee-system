@@ -1,3 +1,7 @@
+<?php
+header("Location: pages/dashboard.html");
+exit();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,14 +20,14 @@
             <p class="text-blue-300 text-xs mt-1">Management System</p>
         </div>
         <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
-            <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-700 text-white text-sm font-medium">📊 Dashboard</a>
-            <a href="members.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">👥 Members</a>
-            <a href="committees.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">🏛️ Committees</a>
-            <a href="assignments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">📋 Assignments</a>
-            <a href="jurisdiction.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">🗺️ Jurisdiction</a>
-            <a href="workload.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">⚖️ Workload</a>
-            <a href="performance.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">📈 Performance</a>
-            <a href="reports.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">📄 Reports</a>
+            <a href="pages/dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-700 text-white text-sm font-medium">📊 Dashboard</a>
+            <a href="pages/members.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">👥 Members</a>
+            <a href="pages/committees.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">🏛️ Committees</a>
+            <a href="pages/assignments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">📋 Assignments</a>
+            <a href="pages/jurisdiction.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">🗺️ Jurisdiction</a>
+            <a href="pages/workload.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">⚖️ Workload</a>
+            <a href="pages/performance.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">📈 Performance</a>
+            <a href="pages/reports.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">📄 Reports</a>
         </nav>
         <div class="p-4 border-t border-blue-800">
             <div class="flex items-center gap-3 mb-3">
@@ -101,7 +105,7 @@
                 <div class="bg-white rounded-xl shadow-sm p-5">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-bold text-gray-800">Recent Committees</h3>
-                        <a href="committees.html" class="text-blue-600 text-sm hover:underline">View all</a>
+                        <a href="pages/committees.html" class="text-blue-600 text-sm hover:underline">View all</a>
                     </div>
                     <div id="recentCommittees">
                         <p class="text-gray-400 text-sm text-center py-4">No committees yet</p>
@@ -112,7 +116,7 @@
                 <div class="bg-white rounded-xl shadow-sm p-5">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-bold text-gray-800">Recent Members</h3>
-                        <a href="members.html" class="text-blue-600 text-sm hover:underline">View all</a>
+                        <a href="pages/members.html" class="text-blue-600 text-sm hover:underline">View all</a>
                     </div>
                     <div id="recentMembers">
                         <p class="text-gray-400 text-sm text-center py-4">No members yet</p>
@@ -124,19 +128,19 @@
             <div class="bg-white rounded-xl shadow-sm p-5">
                 <h3 class="font-bold text-gray-800 mb-4">Quick Actions</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <a href="members.html" class="flex flex-col items-center gap-2 p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
+                    <a href="pages/members.html" class="flex flex-col items-center gap-2 p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
                         <span class="text-2xl">👤</span>
                         <span class="text-sm text-blue-700 font-medium">Add Member</span>
                     </a>
-                    <a href="committees.html" class="flex flex-col items-center gap-2 p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
+                    <a href="pages/committees.html" class="flex flex-col items-center gap-2 p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
                         <span class="text-2xl">🏛️</span>
                         <span class="text-sm text-green-700 font-medium">New Committee</span>
                     </a>
-                    <a href="assignments.html" class="flex flex-col items-center gap-2 p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition">
+                    <a href="pages/assignments.html" class="flex flex-col items-center gap-2 p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition">
                         <span class="text-2xl">🤖</span>
                         <span class="text-sm text-yellow-700 font-medium">AI Recommend</span>
                     </a>
-                    <a href="reports.html" class="flex flex-col items-center gap-2 p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
+                    <a href="pages/reports.html" class="flex flex-col items-center gap-2 p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
                         <span class="text-2xl">📄</span>
                         <span class="text-sm text-purple-700 font-medium">Generate Report</span>
                     </a>
@@ -152,7 +156,7 @@ document.getElementById('currentDate').textContent = new Date().toLocaleDateStri
 
 function logout() {
     localStorage.removeItem('user');
-    window.location.href = 'login.html';
+    window.location.href = 'pages/login.html';
 }
 
 // Load stats

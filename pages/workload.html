@@ -14,17 +14,24 @@
             <p class="text-blue-300 text-xs mt-1">Management System</p>
         </div>
         <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
-            <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Dashboard</a>
-            <a href="members.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Members</a>
-            <a href="committees.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Committees</a>
-            <a href="assignments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Assignments</a>
-            <a href="jurisdiction.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Jurisdiction</a>
-            <a href="workload.html" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-700 text-white text-sm font-medium">Workload</a>
-            <a href="performance.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Performance</a>
-            <a href="reports.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">Reports</a>
+            <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">📊 Dashboard</a>
+            <a href="members.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">👥 Members</a>
+            <a href="committees.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">🏛️ Committees</a>
+            <a href="assignments.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">📋 Assignments</a>
+            <a href="jurisdiction.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">🗺️ Jurisdiction</a>
+            <a href="workload.html" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-700 text-white text-sm font-medium">⚖️ Workload</a>
+            <a href="performance.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">📈 Performance</a>
+            <a href="reports.html" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-800 text-blue-200 text-sm">📄 Reports</a>
         </nav>
         <div class="p-4 border-t border-blue-800">
-            <button onclick="logout()" class="w-full text-left px-3 py-2 text-blue-300 hover:text-white text-sm rounded">Logout</button>
+            <div class="flex items-center gap-3 mb-3">
+                <div class="bg-blue-600 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">A</div>
+                <div>
+                    <p class="text-sm font-medium">Admin</p>
+                    <p class="text-xs text-blue-300" id="sidebarEmail">admin@sk.gov</p>
+                </div>
+            </div>
+            <button onclick="logout()" class="w-full text-left px-3 py-2 text-blue-300 hover:text-white text-sm rounded hover:bg-blue-800">🚪 Logout</button>
         </div>
     </div>
 
@@ -137,7 +144,6 @@
 
 <script>
 var BACKEND = 'http://localhost/committee-management/backend/api';
-var GEMINI_KEY = 'AQ.Ab8RN6KqzYPMg3v3RoiqwyNtdBYRrbhCKBNWlrYwAnAhC_hSpw';
 var allMembers = [];
 var allTasks = [];
 var allCommittees = [];
@@ -377,17 +383,24 @@ function analyzeWorkload() {
 
     var prompt = 'You are an AI workload analyst for SK Committee System Philippines.\n\nOverloaded members (5+ tasks): ' + overStr + '\nUnderloaded members (less than 2 tasks): ' + underStr + '\nBalanced members (2-5 tasks): ' + balStr + '\n\nAnalyze and respond ONLY in JSON (no markdown):\n{"status":"balanced or needs_rebalancing","overloaded_count":0,"underloaded_count":0,"recommendations":[{"action":"redistribute","from_member":"name","to_member":"name","reason":"brief reason"}],"summary":"brief analysis","alert_level":"green or yellow or red"}';
 
-    fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + GEMINI_KEY, {
+    fetch(BACKEND + '/ai/generate.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({contents: [{parts: [{text: prompt}]}]})
+        body: JSON.stringify({prompt: prompt})
     })
     .then(function(r) { return r.json(); })
     .then(function(data) {
-        var text = data.candidates && data.candidates[0] ? data.candidates[0].content.parts[0].text : '';
-        text = text.replace(/```json\n?|\n?```/g, '').trim();
+        if (data.error) {
+            throw new Error(data.error.message || 'Gemini API Error');
+        }
+        var part = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts ? data.candidates[0].content.parts[0] : null;
+        if (!part || !part.text) {
+            throw new Error('No content returned by AI');
+        }
+        var text = part.text.replace(/```json\n?|```/gi, '').trim();
         var jsonStart = text.indexOf('{');
         var jsonEnd = text.lastIndexOf('}');
+        if (jsonStart === -1 || jsonEnd === -1) throw new Error('Invalid JSON format from AI');
         var ai = JSON.parse(text.substring(jsonStart, jsonEnd + 1));
 
         var panel = document.getElementById('aiPanel');
