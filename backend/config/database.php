@@ -27,8 +27,7 @@ foreach ($envPaths as $envFile) {
 
 define('SUPABASE_URL', 'https://nruuovzxuxagwgrpdnmc.supabase.co');
 define('SUPABASE_ANON_KEY', 'sb_publishable_pl8UNT15Ljs3RreIiIQVDA_l_-Erm-D');
-define('SUPABASE_API', SUPABASE_URL . '/rest/v1/');
-define('GEMINI_API_KEY', getenv('GEMINI_API_KEY') ?: 'AIzaSyAppud8w8Jtop2rwBt8HXORD01P5mdBotY');
+define('GEMINI_API_KEY', getenv('GEMINI_API_KEY') ?: '');
 
 function supabaseRequest($endpoint, $method = 'GET', $data = null) {
     $url = SUPABASE_API . $endpoint;
